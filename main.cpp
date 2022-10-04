@@ -19,7 +19,7 @@ enum class InstructionType {
     OTHER = 2
 };
 
-void simulate(const int, std::filesystem::path);
+void simulate(const int, std::filesystem::path, CacheType, int, int, int);
 bool isPowOfTwo(int);
 int parseInt(const std::string&, const std::string&);
 
@@ -74,8 +74,16 @@ int main(int argc, char* argv[]) {
 
     std::vector<std::thread> threads;
 
-    for (int i = 0; i < 4; ++i) {
-        threads.emplace_back(simulate, i, dataPath);
+    for (int threadID = 0; threadID < 4; ++threadID) {
+        threads.emplace_back(
+            simulate,
+            threadID,
+            dataPath,
+            cacheType,
+            cacheSize,
+            associativity,
+            blockSize
+        );
     }
     for (auto& thread : threads) {
         thread.join();
@@ -105,7 +113,14 @@ int parseInt(const std::string& toParse, const std::string& inputType) {
     return parsedInput;
 }
 
-void simulate(const int threadID, std::filesystem::path dataPath) {
+void simulate(
+    const int threadID,
+    std::filesystem::path dataPath,
+    CacheType cacheType,
+    int cacheSize,
+    int associativity,
+    int blockSize
+) {
     dataPath += "_" + std::to_string(threadID) + ".data";
 
     std::ifstream fileStream{dataPath, std::ios::in};
@@ -115,7 +130,17 @@ void simulate(const int threadID, std::filesystem::path dataPath) {
         return;
     }
 
-    std::cout << dataPath << std::endl;
+    std::unique_ptr<Cache> cache;
+
+    switch (cacheType) {
+        case CacheType::MESI:
+            cache = std::make_unique<MESICache>(cacheSize, associativity, blockSize);
+            break;
+        case CacheType::DRAGON:
+            cache = std::make_unique<DragonCache>(cacheSize, associativity, blockSize);
+            break;
+    }
+
     return;
 
     std::string line, hex;
@@ -126,15 +151,15 @@ void simulate(const int threadID, std::filesystem::path dataPath) {
         lineStream >> label >> hex;
 
         switch ((InstructionType) label) {
-        case InstructionType::READ:
-            std::cout << "READ" << std::endl;
-            break;
-        case InstructionType::WRITE:
-            std::cout << "WRITE" << std::endl;
-            break;
-        case InstructionType::OTHER:
-            std::cout << "OTHER" << std::endl;
-            break;
+            case InstructionType::READ:
+                std::cout << "READ" << std::endl;
+                break;
+            case InstructionType::WRITE:
+                std::cout << "WRITE" << std::endl;
+                break;
+            case InstructionType::OTHER:
+                std::cout << "OTHER" << std::endl;
+                break;
         }
 
         // std::cout << label << ' ' << hex << ' ' << std::stoi(hex, nullptr, 16) << std::endl;
