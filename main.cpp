@@ -166,6 +166,7 @@ void simulate(
     }
 }
 
+// Bithack: http://www.graphics.stanford.edu/~seander/bithacks.html#DetermineIfPowerOf2
 bool isPowOfTwo(int i) {
     return i > 0 && !(i & (i - 1));
 }
