@@ -1,9 +1,8 @@
 #include "Cache.h"
-#include "CacheLine.h"
+#include "CacheSet.h"
 
 #include <cmath>
 #include <cstdint>
-#include <iostream>
 
 const int NUM_ADDRESS_BITS = 32;
 
@@ -21,19 +20,22 @@ Cache::Cache(int cacheSize, int associativity, int blockSize)
         << this->numOffsetBits;
     this->tagMask = 0xFFFFFFFF << (NUM_ADDRESS_BITS - this->numTagBits);
 
-    this->cacheLines = std::vector<CacheLine>{numSets, CacheLine{associativity}};
+    this->cacheSets.reserve(numSets);
+    for (int i = 0; i < numSets; ++i) {
+        this->cacheSets.emplace_back(associativity);
+    }
 }
 
 Cache::~Cache() {}
 
 int Cache::read(uint32_t address) {
     uint32_t setIdx = this->getSetIdx(address), tag = this->getTag(address);
-    return this->cacheLines[setIdx].read(tag);
+    return this->cacheSets[setIdx].read(tag);
 }
 
 int Cache::write(uint32_t address) {
     uint32_t setIdx = this->getSetIdx(address), tag = this->getTag(address);
-    return this->cacheLines[setIdx].write(tag);
+    return this->cacheSets[setIdx].write(tag);
 }
 
 uint32_t Cache::getSetIdx(uint32_t address) {

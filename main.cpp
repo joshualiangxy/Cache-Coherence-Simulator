@@ -156,6 +156,7 @@ void simulate(
 
         lineStream >> label >> hex;
         parsedHex = std::stoi(hex, nullptr, 16);
+        // std::cout << label << ' ' << hex << ' ' << parsedHex << std::endl;
 
         switch ((InstructionType) label) {
             case InstructionType::READ:
@@ -171,8 +172,6 @@ void simulate(
                 numComputeCycles += parsedHex;
                 break;
         }
-
-        // std::cout << label << ' ' << hex << ' ' << parsedHex << std::endl;
     }
 }
 

@@ -1,7 +1,6 @@
 #include "DragonCache.h"
 
 #include <cstdint>
-#include <iostream>
 
 DragonCache::DragonCache(int cacheSize, int associativity, int blockSize)
         : Cache(cacheSize, associativity, blockSize) {}

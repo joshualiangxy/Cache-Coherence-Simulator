@@ -1,7 +1,7 @@
 #ifndef GUARD_CACHE_H
 #define GUARD_CACHE_H
 
-#include "CacheLine.h"
+#include "CacheSet.h"
 
 #include <bitset>
 #include <cstdint>
@@ -26,7 +26,7 @@ private:
     int numSetIdxBits;
     int numTagBits;
     int associativity;
-    std::vector<CacheLine> cacheLines;
+    std::vector<CacheSet> cacheSets;
 
     uint32_t getSetIdx(uint32_t address);
     uint32_t getTag(uint32_t address);

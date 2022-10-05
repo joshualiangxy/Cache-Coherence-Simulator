@@ -10,8 +10,8 @@ public:
     MESICache(int cacheSize, int associativity, int blockSize);
     virtual ~MESICache();
 
-    virtual int read(uint32_t address);
-    virtual int write(uint32_t address);
+    int read(uint32_t address);
+    int write(uint32_t address);
 };
 
 #endif

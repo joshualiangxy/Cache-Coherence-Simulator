@@ -14,16 +14,16 @@ struct Node {
     Node(uint32_t tag);
 };
 
-class CacheLine {
+class CacheSet {
 public:
-    CacheLine(int associativity);
+    CacheSet(int associativity);
 
     int read(uint32_t tag);
     int write(uint32_t tag);
     void invalidate(uint32_t tag);
 
 private:
-    std::unordered_map<uint32_t, std::shared_ptr<Node>> line;
+    std::unordered_map<uint32_t, std::shared_ptr<Node>> cacheSet;
     int associativity;
     int size;
     std::shared_ptr<Node> firstDummy;

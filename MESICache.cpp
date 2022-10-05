@@ -1,6 +1,6 @@
 #include "MESICache.h"
 
-#include <iostream>
+#include <cstdint>
 
 MESICache::MESICache(int cacheSize, int associativity, int blockSize)
         : Cache(cacheSize, associativity, blockSize) {}
