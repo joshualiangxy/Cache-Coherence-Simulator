@@ -4,19 +4,15 @@
 #include <iostream>
 
 DragonCache::DragonCache(int cacheSize, int associativity, int blockSize)
-        : Cache(cacheSize, associativity, blockSize) {
-    std::cout << "Creating Dragon cache..." << std::endl;
-}
+        : Cache(cacheSize, associativity, blockSize) {}
 
-DragonCache::~DragonCache() {
-    std::cout << "Destroying Dragon cache..." << std::endl;
-}
+DragonCache::~DragonCache() {}
 
 int DragonCache::read(uint32_t address) {
-    return -1;
+    return Cache::read(address);
 }
 
 int DragonCache::write(uint32_t address) {
-    return -1;
+    return Cache::write(address);
 }
 

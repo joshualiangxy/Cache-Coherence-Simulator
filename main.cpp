@@ -145,24 +145,34 @@ void simulate(
 
     std::string line, hex;
     int label;
+    uint32_t parsedHex;
+    long long numCycles = 0,
+        numComputeCycles = 0,
+        numLoadInstructions = 0,
+        numStoreInstructions = 0;
+
     while (std::getline(fileStream, line)) {
         std::istringstream lineStream{line};
 
         lineStream >> label >> hex;
+        parsedHex = std::stoi(hex, nullptr, 16);
 
         switch ((InstructionType) label) {
             case InstructionType::READ:
-                std::cout << "READ" << std::endl;
+                numCycles += cache->read(parsedHex);
+                ++numLoadInstructions;
                 break;
             case InstructionType::WRITE:
-                std::cout << "WRITE" << std::endl;
+                numCycles += cache->write(parsedHex);
+                ++numStoreInstructions;
                 break;
             case InstructionType::OTHER:
-                std::cout << "OTHER" << std::endl;
+                numCycles += parsedHex;
+                numComputeCycles += parsedHex;
                 break;
         }
 
-        // std::cout << label << ' ' << hex << ' ' << std::stoi(hex, nullptr, 16) << std::endl;
+        // std::cout << label << ' ' << hex << ' ' << parsedHex << std::endl;
     }
 }
 

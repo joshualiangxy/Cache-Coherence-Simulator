@@ -1,8 +1,11 @@
 #ifndef GUARD_CACHE_H
 #define GUARD_CACHE_H
 
+#include "CacheLine.h"
+
 #include <bitset>
 #include <cstdint>
+#include <vector>
 
 enum class CacheType { MESI, DRAGON };
 
@@ -15,9 +18,18 @@ public:
     virtual int write(uint32_t address);
 
 private:
-    std::bitset<32> blkOffsetMask;
-    std::bitset<32> setIdxMask;
-    std::bitset<32> tagMask;
+    uint32_t blkOffsetMask;
+    uint32_t setIdxMask;
+    uint32_t tagMask;
+
+    int numOffsetBits;
+    int numSetIdxBits;
+    int numTagBits;
+    int associativity;
+    std::vector<CacheLine> cacheLines;
+
+    uint32_t getSetIdx(uint32_t address);
+    uint32_t getTag(uint32_t address);
 };
 
 #endif
