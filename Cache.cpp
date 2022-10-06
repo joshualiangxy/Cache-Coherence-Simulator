@@ -1,12 +1,14 @@
 #include "Cache.h"
 #include "CacheSet.h"
+#include "MESICacheSet.h"
+#include "DragonCacheSet.h"
 
 #include <cmath>
 #include <cstdint>
 
 const int NUM_ADDRESS_BITS = 32;
 
-Cache::Cache(int cacheSize, int associativity, int blockSize)
+Cache::Cache(int cacheSize, int associativity, int blockSize, CacheType cacheType)
         : associativity{associativity} {
     int numBlocks = cacheSize / blockSize;
     int numSets = numBlocks / associativity;
@@ -22,20 +24,30 @@ Cache::Cache(int cacheSize, int associativity, int blockSize)
 
     this->cacheSets.reserve(numSets);
     for (int i = 0; i < numSets; ++i) {
-        this->cacheSets.emplace_back(associativity);
+        switch (cacheType) {
+            case CacheType::MESI:
+                this->cacheSets.emplace_back(
+                    std::make_shared<MESICacheSet>(associativity)
+                );
+                break;
+
+            case CacheType::DRAGON:
+                this->cacheSets.emplace_back(
+                    std::make_shared<DragonCacheSet>(associativity)
+                );
+                break;
+        }
     }
 }
 
-Cache::~Cache() {}
-
-int Cache::read(uint32_t address) {
+std::pair<bool, int> Cache::read(uint32_t address) {
     uint32_t setIdx = this->getSetIdx(address), tag = this->getTag(address);
-    return this->cacheSets[setIdx].read(tag);
+    return this->cacheSets[setIdx]->read(tag);
 }
 
-int Cache::write(uint32_t address) {
+std::pair<bool, int> Cache::write(uint32_t address) {
     uint32_t setIdx = this->getSetIdx(address), tag = this->getTag(address);
-    return this->cacheSets[setIdx].write(tag);
+    return this->cacheSets[setIdx]->write(tag);
 }
 
 uint32_t Cache::getSetIdx(uint32_t address) {

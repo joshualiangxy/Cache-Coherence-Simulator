@@ -1,26 +1,31 @@
 #include "CacheSet.h"
 
 #include <memory>
+#include <utility>
 
 const int CACHE_HIT_COST = 1;
 const int DIRTY_CACHE_EVICT_COST = 100;
 const int MEMORY_FETCH_COST = 100;
 
-Node::Node(uint32_t tag): tag{tag}, isDirty{false} {}
+CacheLineNode::CacheLineNode(uint32_t tag)
+    : tag{tag}
+    , isDirty{false}
+    , state{CacheLineState::INVALID} {}
 
 CacheSet::CacheSet(int associativity)
         : cacheSet{}
         , associativity{associativity}
         , size{0}
-        , firstDummy{std::make_shared<Node>(0)}
-        , lastDummy{std::make_shared<Node>(0)} {
+        , firstDummy{std::make_shared<CacheLineNode>(0)}
+        , lastDummy{std::make_shared<CacheLineNode>(0)} {
     this->firstDummy->next = lastDummy;
     this->lastDummy->prev = firstDummy;
 }
 
-int CacheSet::read(uint32_t tag) {
+std::pair<bool, int> CacheSet::read(uint32_t tag) {
     int numCycles = 0;
-    std::shared_ptr<Node> node;
+    std::shared_ptr<CacheLineNode> node;
+    bool isCacheMiss = false;
 
     auto iter = this->cacheSet.find(tag);
     if (iter != this->cacheSet.end()) {
@@ -29,8 +34,9 @@ int CacheSet::read(uint32_t tag) {
 
         numCycles += CACHE_HIT_COST;
     } else {
+        isCacheMiss = true;
         numCycles += MEMORY_FETCH_COST;
-        node = std::make_shared<Node>(tag);
+        node = std::make_shared<CacheLineNode>(tag);
         cacheSet[tag] = node;
 
         if (this->size < this->associativity) {
@@ -41,14 +47,14 @@ int CacheSet::read(uint32_t tag) {
     }
 
     this->insertNode(node);
-    return numCycles;
+    return { isCacheMiss, numCycles };
 }
 
-int CacheSet::write(uint32_t tag) {
-    int numCycles = this->read(tag);
+std::pair<bool, int> CacheSet::write(uint32_t tag) {
+    auto [isCacheMiss, numCycles] = this->read(tag);
     this->cacheSet[tag]->isDirty = true;
 
-    return numCycles;
+    return { isCacheMiss, numCycles };
 }
 
 void CacheSet::invalidate(uint32_t tag) {
@@ -63,7 +69,7 @@ void CacheSet::invalidate(uint32_t tag) {
 }
 
 int CacheSet::evict() {
-    std::shared_ptr<Node> last = this->lastDummy->prev;
+    std::shared_ptr<CacheLineNode> last = this->lastDummy->prev;
 
     this->removeNode(last);
     this->cacheSet.erase(last->tag);
@@ -71,8 +77,8 @@ int CacheSet::evict() {
     return last->isDirty ? DIRTY_CACHE_EVICT_COST : 0;
 }
 
-void CacheSet::removeNode(std::shared_ptr<Node> node) {
-    std::shared_ptr<Node> prev = node->prev, next = node->next;
+void CacheSet::removeNode(std::shared_ptr<CacheLineNode> node) {
+    std::shared_ptr<CacheLineNode> prev = node->prev, next = node->next;
 
     prev->next = next;
     next->prev = prev;
@@ -81,8 +87,8 @@ void CacheSet::removeNode(std::shared_ptr<Node> node) {
     node->next = nullptr;
 }
 
-void CacheSet::insertNode(std::shared_ptr<Node> node) {
-    std::shared_ptr<Node> next = this->firstDummy->next;
+void CacheSet::insertNode(std::shared_ptr<CacheLineNode> node) {
+    std::shared_ptr<CacheLineNode> next = this->firstDummy->next;
     next->prev = node;
 
     node->next = next;

@@ -3,19 +3,19 @@
 
 #include "CacheSet.h"
 
-#include <bitset>
 #include <cstdint>
+#include <memory>
+#include <utility>
 #include <vector>
 
 enum class CacheType { MESI, DRAGON };
 
 class Cache {
 public:
-    Cache(int cacheSize, int associativity, int blockSize);
-    virtual ~Cache();
+    Cache(int cacheSize, int associativity, int blockSize, CacheType cacheType);
     
-    virtual int read(uint32_t address);
-    virtual int write(uint32_t address);
+    std::pair<bool, int> read(uint32_t address);
+    std::pair<bool, int> write(uint32_t address);
 
 private:
     uint32_t blkOffsetMask;
@@ -26,7 +26,7 @@ private:
     int numSetIdxBits;
     int numTagBits;
     int associativity;
-    std::vector<CacheSet> cacheSets;
+    std::vector<std::shared_ptr<CacheSet>> cacheSets;
 
     uint32_t getSetIdx(uint32_t address);
     uint32_t getTag(uint32_t address);

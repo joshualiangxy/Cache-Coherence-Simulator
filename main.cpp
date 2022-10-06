@@ -1,6 +1,4 @@
 #include "Cache.h"
-#include "DragonCache.h"
-#include "MESICache.h"
 
 #include <filesystem>
 #include <fstream>
@@ -130,16 +128,12 @@ void simulate(
         return;
     }
 
-    std::unique_ptr<Cache> cache;
-
-    switch (cacheType) {
-        case CacheType::MESI:
-            cache = std::make_unique<MESICache>(cacheSize, associativity, blockSize);
-            break;
-        case CacheType::DRAGON:
-            cache = std::make_unique<DragonCache>(cacheSize, associativity, blockSize);
-            break;
-    }
+    std::unique_ptr<Cache> cache = std::make_unique<Cache>(
+        cacheSize,
+        associativity,
+        blockSize,
+        cacheType
+    );
 
     return;
 
@@ -148,29 +142,46 @@ void simulate(
     uint32_t parsedHex;
     long long numCycles = 0,
         numComputeCycles = 0,
-        numLoadInstructions = 0,
-        numStoreInstructions = 0;
+        numLoadAndStoreInstructions = 0,
+        numIdleCycles = 0,
+        numCacheMiss = 0;
 
     while (std::getline(fileStream, line)) {
         std::istringstream lineStream{line};
 
         lineStream >> label >> hex;
         parsedHex = std::stoi(hex, nullptr, 16);
-        // std::cout << label << ' ' << hex << ' ' << parsedHex << std::endl;
 
         switch ((InstructionType) label) {
-            case InstructionType::READ:
-                numCycles += cache->read(parsedHex);
-                ++numLoadInstructions;
+            case InstructionType::READ: {
+                auto [isCacheMiss, executedCycles] = cache->read(parsedHex);
+                if (isCacheMiss) {
+                    ++numCacheMiss;
+                }
+
+                numCycles += executedCycles;
+                numIdleCycles += executedCycles;
+                ++numLoadAndStoreInstructions;
                 break;
-            case InstructionType::WRITE:
-                numCycles += cache->write(parsedHex);
-                ++numStoreInstructions;
+            }
+
+            case InstructionType::WRITE: {
+                auto [isCacheMiss, executedCycles] = cache->write(parsedHex);
+                if (isCacheMiss) {
+                    ++numCacheMiss;
+                }
+
+                numCycles += executedCycles;
+                numIdleCycles += executedCycles;
+                ++numLoadAndStoreInstructions;
                 break;
-            case InstructionType::OTHER:
+            }
+
+            case InstructionType::OTHER: {
                 numCycles += parsedHex;
                 numComputeCycles += parsedHex;
                 break;
+            }
         }
     }
 }

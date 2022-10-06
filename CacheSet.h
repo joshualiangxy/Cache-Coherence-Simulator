@@ -4,34 +4,47 @@
 #include <cstdint>
 #include <memory>
 #include <unordered_map>
+#include <utility>
 
-struct Node {
-    std::shared_ptr<Node> next;
-    std::shared_ptr<Node> prev;
+enum class CacheLineState {
+    INVALID,
+    SHARED,
+    EXCLUSIVE,
+    MODIFIED,
+    SHARED_CLEAN,
+    SHARED_MODIFIED
+};
+
+struct CacheLineNode {
+    std::shared_ptr<CacheLineNode> next;
+    std::shared_ptr<CacheLineNode> prev;
     uint32_t tag;
     bool isDirty;
+    CacheLineState state;
 
-    Node(uint32_t tag);
+    CacheLineNode(uint32_t tag);
 };
 
 class CacheSet {
 public:
     CacheSet(int associativity);
 
-    int read(uint32_t tag);
-    int write(uint32_t tag);
+    virtual std::pair<bool, int> read(uint32_t tag);
+    virtual std::pair<bool, int> write(uint32_t tag);
     void invalidate(uint32_t tag);
 
+protected:
+    std::unordered_map<uint32_t, std::shared_ptr<CacheLineNode>> cacheSet;
+
 private:
-    std::unordered_map<uint32_t, std::shared_ptr<Node>> cacheSet;
     int associativity;
     int size;
-    std::shared_ptr<Node> firstDummy;
-    std::shared_ptr<Node> lastDummy;
+    std::shared_ptr<CacheLineNode> firstDummy;
+    std::shared_ptr<CacheLineNode> lastDummy;
 
     int evict();
-    void removeNode(std::shared_ptr<Node> node);
-    void insertNode(std::shared_ptr<Node> node);
+    void removeNode(std::shared_ptr<CacheLineNode> node);
+    void insertNode(std::shared_ptr<CacheLineNode> node);
 };
 
 #endif
