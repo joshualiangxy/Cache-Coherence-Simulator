@@ -1,5 +1,7 @@
 #include "DragonCacheSet.h"
 
+#include "Logger.h"
+
 #include <stdexcept>
 #include <utility>
 
@@ -7,8 +9,8 @@ DragonCacheSet::DragonCacheSet(int associativity): CacheSet{associativity} {}
 
 DragonCacheSet::~DragonCacheSet() {};
 
-std::pair<bool, int> DragonCacheSet::read(uint32_t tag) {
-    auto [isReadMiss, numCycles] = CacheSet::read(tag);
+void DragonCacheSet::read(uint32_t tag, std::shared_ptr<Logger> logger) {
+    CacheSet::read(tag, logger);
     std::shared_ptr<CacheLineNode> node = this->cacheSet[tag];
 
     switch (node->state) {
@@ -16,19 +18,19 @@ std::pair<bool, int> DragonCacheSet::read(uint32_t tag) {
             break;
         case CacheLineState::EXCLUSIVE:
         case CacheLineState::MODIFIED:
+            logger->incrementPrivateDataAccess();
             break;
         case CacheLineState::SHARED_CLEAN:
         case CacheLineState::SHARED_MODIFIED:
+            logger->incrementPublicDataAccess();
             break;
         default:
             throw std::logic_error("Invalid cache state for Dragon");
     }
-
-    return { isReadMiss, numCycles };
 }
 
-std::pair<bool, int> DragonCacheSet::write(uint32_t tag) {
-    auto [isWriteMiss, numCycles] = CacheSet::write(tag);
+void DragonCacheSet::write(uint32_t tag, std::shared_ptr<Logger> logger) {
+    CacheSet::write(tag, logger);
     std::shared_ptr<CacheLineNode> node = this->cacheSet[tag];
 
     switch (node->state) {
@@ -46,7 +48,5 @@ std::pair<bool, int> DragonCacheSet::write(uint32_t tag) {
         default:
             throw std::logic_error("Invalid cache state for Dragon");
     }
-
-    return { isWriteMiss, numCycles };
 }
 

@@ -1,5 +1,8 @@
 #include "MESICacheSet.h"
 
+#include "Logger.h"
+
+#include <memory>
 #include <stdexcept>
 #include <utility>
 
@@ -7,27 +10,29 @@ MESICacheSet::MESICacheSet(int associativity): CacheSet{associativity} {}
 
 MESICacheSet::~MESICacheSet() {};
 
-std::pair<bool, int> MESICacheSet::read(uint32_t tag) {
-    auto [isReadMiss, numCycles] = CacheSet::read(tag);
+void MESICacheSet::read(uint32_t tag, std::shared_ptr<Logger> logger) {
+    CacheSet::read(tag, logger);
     std::shared_ptr<CacheLineNode> node = this->cacheSet[tag];
 
     switch (node->state) {
         case CacheLineState::INVALID:
             node->state = CacheLineState::SHARED;
+            logger->incrementPublicDataAccess();
             break;
         case CacheLineState::SHARED:
+            logger->incrementPublicDataAccess();
+            break;
         case CacheLineState::EXCLUSIVE:
         case CacheLineState::MODIFIED:
+            logger->incrementPrivateDataAccess();
             break;
         default:
             throw std::logic_error("Invalid cache state for MESI");
     }
-
-    return { isReadMiss, numCycles };
 }
 
-std::pair<bool, int> MESICacheSet::write(uint32_t tag) {
-    auto [isWriteMiss, numCycles] = CacheSet::write(tag);
+void MESICacheSet::write(uint32_t tag, std::shared_ptr<Logger> logger) {
+    CacheSet::write(tag, logger);
     std::shared_ptr<CacheLineNode> node = this->cacheSet[tag];
     node->state = CacheLineState::MODIFIED;
 
@@ -42,7 +47,5 @@ std::pair<bool, int> MESICacheSet::write(uint32_t tag) {
         default:
             throw std::logic_error("Invalid cache state for MESI");
     }
-
-    return { isWriteMiss, numCycles };
 }
 

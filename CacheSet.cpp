@@ -1,4 +1,5 @@
 #include "CacheSet.h"
+#include "Logger.h"
 
 #include <memory>
 #include <utility>
@@ -22,39 +23,13 @@ CacheSet::CacheSet(int associativity)
     this->lastDummy->prev = firstDummy;
 }
 
-std::pair<bool, int> CacheSet::read(uint32_t tag) {
-    int numCycles = 0;
-    std::shared_ptr<CacheLineNode> node;
-    bool isCacheMiss = false;
-
-    auto iter = this->cacheSet.find(tag);
-    if (iter != this->cacheSet.end()) {
-        node = iter->second;
-        this->removeNode(node);
-
-        numCycles += CACHE_HIT_COST;
-    } else {
-        isCacheMiss = true;
-        numCycles += MEMORY_FETCH_COST;
-        node = std::make_shared<CacheLineNode>(tag);
-        cacheSet[tag] = node;
-
-        if (this->size < this->associativity) {
-            ++this->size;
-        } else {
-            numCycles += this->evict();
-        }
-    }
-
-    this->insertNode(node);
-    return { isCacheMiss, numCycles };
+void CacheSet::read(uint32_t tag, std::shared_ptr<Logger> logger) {
+    this->loadFromMemory(tag, logger);
 }
 
-std::pair<bool, int> CacheSet::write(uint32_t tag) {
-    auto [isCacheMiss, numCycles] = this->read(tag);
+void CacheSet::write(uint32_t tag, std::shared_ptr<Logger> logger) {
+    this->loadFromMemory(tag, logger);
     this->cacheSet[tag]->isDirty = true;
-
-    return { isCacheMiss, numCycles };
 }
 
 void CacheSet::invalidate(uint32_t tag) {
@@ -95,5 +70,37 @@ void CacheSet::insertNode(std::shared_ptr<CacheLineNode> node) {
     node->prev = this->firstDummy;
 
     this->firstDummy->next = node;
+}
+
+void CacheSet::loadFromMemory(
+    uint32_t tag,
+    std::shared_ptr<Logger> logger
+) {
+    int numCycles = 0;
+    std::shared_ptr<CacheLineNode> node;
+
+    auto iter = this->cacheSet.find(tag);
+    if (iter != this->cacheSet.end()) {
+        node = iter->second;
+        this->removeNode(node);
+
+        numCycles += CACHE_HIT_COST;
+    } else {
+        logger->incrementNumCacheMiss();
+        numCycles += MEMORY_FETCH_COST;
+        node = std::make_shared<CacheLineNode>(tag);
+        cacheSet[tag] = node;
+
+        if (this->size < this->associativity) {
+            ++this->size;
+        } else {
+            numCycles += this->evict();
+        }
+    }
+
+    this->insertNode(node);
+
+    logger->addExecutionCycles(numCycles);
+    logger->addIdleCycles(numCycles);
 }
 

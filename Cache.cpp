@@ -1,15 +1,22 @@
 #include "Cache.h"
 #include "CacheSet.h"
-#include "MESICacheSet.h"
 #include "DragonCacheSet.h"
+#include "Logger.h"
+#include "MESICacheSet.h"
 
 #include <cmath>
 #include <cstdint>
+#include <memory>
 
 const int NUM_ADDRESS_BITS = 32;
 
-Cache::Cache(int cacheSize, int associativity, int blockSize, CacheType cacheType)
-        : associativity{associativity} {
+Cache::Cache(
+    int cacheSize,
+    int associativity,
+    int blockSize,
+    CacheType cacheType,
+    std::shared_ptr<Logger> logger
+) : logger{std::move(logger)}, associativity{associativity} {
     int numBlocks = cacheSize / blockSize;
     int numSets = numBlocks / associativity;
 
@@ -40,14 +47,18 @@ Cache::Cache(int cacheSize, int associativity, int blockSize, CacheType cacheTyp
     }
 }
 
-std::pair<bool, int> Cache::read(uint32_t address) {
+void Cache::read(uint32_t address) {
     uint32_t setIdx = this->getSetIdx(address), tag = this->getTag(address);
-    return this->cacheSets[setIdx]->read(tag);
+    this->cacheSets[setIdx]->read(tag, this->logger);
+
+    this->logger->incrementNumLoadStoreInstructions();
 }
 
-std::pair<bool, int> Cache::write(uint32_t address) {
+void Cache::write(uint32_t address) {
     uint32_t setIdx = this->getSetIdx(address), tag = this->getTag(address);
-    return this->cacheSets[setIdx]->write(tag);
+    this->cacheSets[setIdx]->write(tag, this->logger);
+
+    this->logger->incrementNumLoadStoreInstructions();
 }
 
 uint32_t Cache::getSetIdx(uint32_t address) {

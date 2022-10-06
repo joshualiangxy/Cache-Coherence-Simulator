@@ -1,6 +1,8 @@
 #ifndef GUARD_CACHE_LINE_H
 #define GUARD_CACHE_LINE_H
 
+#include "Logger.h"
+
 #include <cstdint>
 #include <memory>
 #include <unordered_map>
@@ -29,8 +31,8 @@ class CacheSet {
 public:
     CacheSet(int associativity);
 
-    virtual std::pair<bool, int> read(uint32_t tag);
-    virtual std::pair<bool, int> write(uint32_t tag);
+    virtual void read(uint32_t tag, std::shared_ptr<Logger> logger);
+    virtual void write(uint32_t tag, std::shared_ptr<Logger> logger);
     void invalidate(uint32_t tag);
 
 protected:
@@ -45,6 +47,8 @@ private:
     int evict();
     void removeNode(std::shared_ptr<CacheLineNode> node);
     void insertNode(std::shared_ptr<CacheLineNode> node);
+
+    void loadFromMemory(uint32_t tag, std::shared_ptr<Logger> logger);
 };
 
 #endif

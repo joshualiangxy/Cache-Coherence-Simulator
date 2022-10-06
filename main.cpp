@@ -1,4 +1,5 @@
 #include "Cache.h"
+#include "Logger.h"
 
 #include <filesystem>
 #include <fstream>
@@ -17,7 +18,15 @@ enum class InstructionType {
     OTHER = 2
 };
 
-void simulate(const int, std::filesystem::path, CacheType, int, int, int);
+void simulate(
+    const int,
+    std::filesystem::path,
+    CacheType,
+    int,
+    int,
+    int,
+    std::shared_ptr<Logger>
+);
 bool isPowOfTwo(int);
 int parseInt(const std::string&, const std::string&);
 
@@ -71,8 +80,10 @@ int main(int argc, char* argv[]) {
     }
 
     std::vector<std::thread> threads;
+    std::vector<std::shared_ptr<Logger>> loggers;
 
     for (int threadID = 0; threadID < 4; ++threadID) {
+        loggers.emplace_back(std::make_shared<Logger>());
         threads.emplace_back(
             simulate,
             threadID,
@@ -80,7 +91,8 @@ int main(int argc, char* argv[]) {
             cacheType,
             cacheSize,
             associativity,
-            blockSize
+            blockSize,
+            loggers.back()
         );
     }
     for (auto& thread : threads) {
@@ -117,7 +129,8 @@ void simulate(
     CacheType cacheType,
     int cacheSize,
     int associativity,
-    int blockSize
+    int blockSize,
+    std::shared_ptr<Logger> logger
 ) {
     dataPath += "_" + std::to_string(threadID) + ".data";
 
@@ -132,7 +145,8 @@ void simulate(
         cacheSize,
         associativity,
         blockSize,
-        cacheType
+        cacheType,
+        logger
     );
 
     return;
@@ -140,11 +154,6 @@ void simulate(
     std::string line, hex;
     int label;
     uint32_t parsedHex;
-    long long numCycles = 0,
-        numComputeCycles = 0,
-        numLoadAndStoreInstructions = 0,
-        numIdleCycles = 0,
-        numCacheMiss = 0;
 
     while (std::getline(fileStream, line)) {
         std::istringstream lineStream{line};
@@ -153,35 +162,16 @@ void simulate(
         parsedHex = std::stoi(hex, nullptr, 16);
 
         switch ((InstructionType) label) {
-            case InstructionType::READ: {
-                auto [isCacheMiss, executedCycles] = cache->read(parsedHex);
-                if (isCacheMiss) {
-                    ++numCacheMiss;
-                }
-
-                numCycles += executedCycles;
-                numIdleCycles += executedCycles;
-                ++numLoadAndStoreInstructions;
+            case InstructionType::READ:
+                cache->read(parsedHex);
                 break;
-            }
-
-            case InstructionType::WRITE: {
-                auto [isCacheMiss, executedCycles] = cache->write(parsedHex);
-                if (isCacheMiss) {
-                    ++numCacheMiss;
-                }
-
-                numCycles += executedCycles;
-                numIdleCycles += executedCycles;
-                ++numLoadAndStoreInstructions;
+            case InstructionType::WRITE:
+                cache->write(parsedHex);
                 break;
-            }
-
-            case InstructionType::OTHER: {
-                numCycles += parsedHex;
-                numComputeCycles += parsedHex;
+            case InstructionType::OTHER:
+                logger->addExecutionCycles(parsedHex);
+                logger->addComputeCycles(parsedHex);
                 break;
-            }
         }
     }
 }

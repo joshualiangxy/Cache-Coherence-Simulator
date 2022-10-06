@@ -2,8 +2,10 @@
 #define GUARD_DRAGON_CACHE_SET_H
 
 #include "CacheSet.h"
+#include "Logger.h"
 
 #include <cstdint>
+#include <memory>
 #include <utility>
 
 class DragonCacheSet : public CacheSet {
@@ -11,8 +13,8 @@ public:
     DragonCacheSet(int associativity);
     virtual ~DragonCacheSet();
 
-    std::pair<bool, int> read(uint32_t tag);
-    std::pair<bool, int> write(uint32_t tag);
+    void read(uint32_t tag, std::shared_ptr<Logger> logger);
+    void write(uint32_t tag, std::shared_ptr<Logger> logger);
 };
 
 #endif
