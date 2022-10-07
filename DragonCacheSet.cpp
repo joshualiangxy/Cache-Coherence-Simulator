@@ -6,14 +6,17 @@
 #include <utility>
 
 const int NUM_BYTES_IN_WORD = 4;
+const int NUM_CYCLES_PER_WORD = 2;
 
 DragonCacheSet::DragonCacheSet(
     int setIdx,
     int numSetIdxBits,
     int associativity,
     int blockSize
-) : CacheSet{setIdx, numSetIdxBits, associativity}
-    , numCyclesToSendBlock{(blockSize / NUM_BYTES_IN_WORD) * 2} {}
+) : CacheSet{setIdx, numSetIdxBits, associativity} {
+    int numWordsInBlock = blockSize / NUM_BYTES_IN_WORD;
+    this->numCyclesToSendBlock = numWordsInBlock * NUM_CYCLES_PER_WORD;
+}
 
 DragonCacheSet::~DragonCacheSet() {};
 
