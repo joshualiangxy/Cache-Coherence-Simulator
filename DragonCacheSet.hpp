@@ -10,7 +10,12 @@
 
 class DragonCacheSet : public CacheSet {
 public:
-    DragonCacheSet(int setIdx, int numSetIdxBits, int associativity);
+    DragonCacheSet(
+        int setIdx,
+        int numSetIdxBits,
+        int associativity,
+        int numWordsInBlock
+    );
     virtual ~DragonCacheSet();
 
     void read(
@@ -34,6 +39,9 @@ public:
         std::shared_ptr<Logger> logger
     );
     void handleBusUpdateEvent(uint32_t tag, std::shared_ptr<Logger> logger);
+
+private:
+    int numCyclesToSendBlock;
 };
 
 #endif

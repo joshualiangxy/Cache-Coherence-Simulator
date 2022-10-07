@@ -5,8 +5,15 @@
 #include <stdexcept>
 #include <utility>
 
-DragonCacheSet::DragonCacheSet(int setIdx, int numSetIdxBits, int associativity)
-    : CacheSet{setIdx, numSetIdxBits, associativity} {}
+const int NUM_BYTES_IN_WORD = 4;
+
+DragonCacheSet::DragonCacheSet(
+    int setIdx,
+    int numSetIdxBits,
+    int associativity,
+    int blockSize
+) : CacheSet{setIdx, numSetIdxBits, associativity}
+    , numCyclesToSendBlock{(blockSize / NUM_BYTES_IN_WORD) * 2} {}
 
 DragonCacheSet::~DragonCacheSet() {};
 
@@ -72,6 +79,8 @@ void DragonCacheSet::write(
                 bus->busUpdateAndCheckIsExclusive(blockIdx, threadID);
                 logger->incrementBusTraffic();
                 logger->incrementBusInvalidateUpdateEvents();
+                logger->addExecutionCycles(this->numCyclesToSendBlock);
+                logger->addIdleCycles(this->numCyclesToSendBlock);
             }
 
             break;
@@ -92,6 +101,8 @@ void DragonCacheSet::write(
 
             logger->incrementBusTraffic();
             logger->incrementBusInvalidateUpdateEvents();
+            logger->addExecutionCycles(this->numCyclesToSendBlock);
+            logger->addIdleCycles(this->numCyclesToSendBlock);
             break;
         }
         default:

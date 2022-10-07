@@ -2,6 +2,7 @@
 #include "Cache.hpp"
 #include "Logger.hpp"
 
+#include <algorithm>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -102,8 +103,27 @@ int main(int argc, char* argv[]) {
             bus
         );
     }
-    for (auto& thread : threads) {
-        thread.join();
+
+    long long numExecutionCycles = 0,
+        numBusTrafficInBytes = 0,
+        numBusInvalidateUpdateEvents = 0;
+
+    for (int threadID = 0; threadID < NUM_THREADS; ++threadID) {
+        threads[threadID].join();
+
+        numExecutionCycles += loggers[threadID]->getNumExecutionCycles();
+        numBusTrafficInBytes += loggers[threadID]->getNumBusTrafficInBytes();
+        numBusInvalidateUpdateEvents += loggers[threadID]
+            ->getNumBusInvalidateUpdateEvents();
+    }
+
+    std::cout << "Overall Execution Cycles for entire trace: " << numExecutionCycles << std::endl
+        << "Total data traffic on the bus in bytes: " << numBusTrafficInBytes << std::endl
+        << "Total invalidations/updates on the bus: " << numBusInvalidateUpdateEvents << std::endl << std::endl;
+
+    for (int threadID = 0; threadID < NUM_THREADS; ++threadID) {
+        std::cout << "Core " << threadID << std::endl;
+        loggers[threadID]->logResults();
     }
 
     return 0;
@@ -184,9 +204,6 @@ void simulate(
                 break;
         }
     }
-
-    std::cout << "Thread " << threadID << std::endl;
-    logger->logResults();
 }
 
 // Bithack: http://www.graphics.stanford.edu/~seander/bithacks.html#DetermineIfPowerOf2
