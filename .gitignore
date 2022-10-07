@@ -2,4 +2,6 @@
 .clangd
 data/
 coherence
+.gdb_history
+peda-session-coherence.txt
 

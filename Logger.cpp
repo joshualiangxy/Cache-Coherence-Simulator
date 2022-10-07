@@ -1,4 +1,6 @@
-#include "Logger.h"
+#include "Logger.hpp"
+
+#include <iostream>
 
 Logger::Logger()
     : numExecutionCycles{0}
@@ -11,6 +13,20 @@ Logger::Logger()
     , numPrivateDataAccess{0}
     , numPublicDataAccess{0} {}
 
+void Logger::logResults() {
+    long double cacheMissRate = (long double) numCacheMiss / numLoadStoreInstructions;
+
+    std::cout << "1. Overall Execution Cycle: " << numExecutionCycles
+        << "\n2. Number of compute cycles: " << numComputeCycles
+        << "\n3. Number of load/store instructions: " << numLoadStoreInstructions
+        << "\n4. Number of idle cycles: " << numIdleCycles
+        << "\n5. Data cache miss rate: " << cacheMissRate
+        << "\n6. Data traffic in bytes: " << numBusTrafficInBytes
+        << "\n7. Number of invalidations or updates on bus: " << numBusInvalidateUpdateEvents
+        << "\n8. Number of private data access: " << numPrivateDataAccess
+        << "\n9. Number of public data access: " << numPublicDataAccess << std::endl << std::endl;
+}
+
 void Logger::addExecutionCycles(int numCycles) {
     this->numExecutionCycles += numCycles;
 }
@@ -18,6 +34,7 @@ void Logger::addExecutionCycles(int numCycles) {
 void Logger::addComputeCycles(int numCycles) {
     this->numComputeCycles += numCycles;
 }
+
 void Logger::addIdleCycles(int numCycles) {
     this->numIdleCycles += numCycles;
 }

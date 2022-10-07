@@ -1,5 +1,6 @@
-#include "CacheSet.h"
-#include "Logger.h"
+#include "CacheSet.hpp"
+
+#include "Logger.hpp"
 
 #include <memory>
 #include <utility>
@@ -13,8 +14,10 @@ CacheLineNode::CacheLineNode(uint32_t tag)
     , isDirty{false}
     , state{CacheLineState::INVALID} {}
 
-CacheSet::CacheSet(int associativity)
+CacheSet::CacheSet(int setIdx, int numSetIdxBits, int associativity)
         : cacheSet{}
+        , setIdx{setIdx}
+        , numSetIdxBits{numSetIdxBits}
         , associativity{associativity}
         , size{0}
         , firstDummy{std::make_shared<CacheLineNode>(0)}
@@ -23,16 +26,31 @@ CacheSet::CacheSet(int associativity)
     this->lastDummy->prev = firstDummy;
 }
 
-void CacheSet::read(uint32_t tag, std::shared_ptr<Logger> logger) {
-    this->loadFromMemory(tag, logger);
+void CacheSet::read(
+    int threadID,
+    uint32_t tag,
+    std::shared_ptr<Bus> bus,
+    std::shared_ptr<Logger> logger
+) {
+    this->loadFromMemory(threadID, tag, bus, logger);
 }
 
-void CacheSet::write(uint32_t tag, std::shared_ptr<Logger> logger) {
-    this->loadFromMemory(tag, logger);
+void CacheSet::write(
+    int threadID,
+    uint32_t tag,
+    std::shared_ptr<Bus> bus,
+    std::shared_ptr<Logger> logger
+) {
+    this->loadFromMemory(threadID, tag, bus, logger);
     this->cacheSet[tag]->isDirty = true;
 }
 
-void CacheSet::invalidate(uint32_t tag) {
+void CacheSet::invalidate(
+    int threadID,
+    uint32_t tag,
+    std::shared_ptr<Bus> bus,
+    std::shared_ptr<Logger> logger
+) {
     auto iter = this->cacheSet.find(tag);
     if (iter == this->cacheSet.end()) {
         return;
@@ -41,13 +59,21 @@ void CacheSet::invalidate(uint32_t tag) {
     --this->size;
     this->removeNode(iter->second);
     this->cacheSet.erase(tag);
+
+    logger->incrementBusInvalidateUpdateEvents();
+    bus->invalidateBlock(this->getBlockIdx(tag), threadID);
 }
 
-int CacheSet::evict() {
+uint32_t CacheSet::getBlockIdx(uint32_t tag) {
+    return (tag << this->numSetIdxBits) | this->setIdx;
+}
+
+int CacheSet::evict(int threadID, std::shared_ptr<Bus> bus) {
     std::shared_ptr<CacheLineNode> last = this->lastDummy->prev;
 
     this->removeNode(last);
     this->cacheSet.erase(last->tag);
+    bus->invalidateBlock(this->getBlockIdx(last->tag), threadID);
 
     return last->isDirty ? DIRTY_CACHE_EVICT_COST : 0;
 }
@@ -73,7 +99,9 @@ void CacheSet::insertNode(std::shared_ptr<CacheLineNode> node) {
 }
 
 void CacheSet::loadFromMemory(
+    int threadID,
     uint32_t tag,
+    std::shared_ptr<Bus> bus,
     std::shared_ptr<Logger> logger
 ) {
     int numCycles = 0;
@@ -94,7 +122,7 @@ void CacheSet::loadFromMemory(
         if (this->size < this->associativity) {
             ++this->size;
         } else {
-            numCycles += this->evict();
+            numCycles += this->evict(threadID, bus);
         }
     }
 

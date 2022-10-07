@@ -1,16 +1,20 @@
-#include "Cache.h"
-#include "Logger.h"
+#include "Bus.hpp"
+#include "Cache.hpp"
+#include "Logger.hpp"
 
 #include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <memory>
+#include <queue>
 #include <sstream>
 #include <stdexcept>
 #include <thread>
 #include <unordered_set>
 #include <vector>
 #include <string>
+
+const int NUM_THREADS = 4;
 
 enum class InstructionType {
     READ = 0,
@@ -19,16 +23,17 @@ enum class InstructionType {
 };
 
 void simulate(
-    const int,
-    std::filesystem::path,
-    CacheType,
-    int,
-    int,
-    int,
-    std::shared_ptr<Logger>
+    const int threadID,
+    std::filesystem::path dataPath,
+    CacheType cacheType,
+    int cacheSize,
+    int associativity,
+    int blockSize,
+    std::shared_ptr<Logger> logger,
+    std::shared_ptr<Bus> bus
 );
-bool isPowOfTwo(int);
-int parseInt(const std::string&, const std::string&);
+bool isPowOfTwo(int i);
+int parseInt(const std::string& toParse, const std::string& inputType);
 
 int main(int argc, char* argv[]) {
     if (argc < 6) {
@@ -81,8 +86,9 @@ int main(int argc, char* argv[]) {
 
     std::vector<std::thread> threads;
     std::vector<std::shared_ptr<Logger>> loggers;
+    std::shared_ptr<Bus> bus = std::make_shared<Bus>();
 
-    for (int threadID = 0; threadID < 4; ++threadID) {
+    for (int threadID = 0; threadID < NUM_THREADS; ++threadID) {
         loggers.emplace_back(std::make_shared<Logger>());
         threads.emplace_back(
             simulate,
@@ -92,7 +98,8 @@ int main(int argc, char* argv[]) {
             cacheSize,
             associativity,
             blockSize,
-            loggers.back()
+            loggers.back(),
+            bus
         );
     }
     for (auto& thread : threads) {
@@ -130,7 +137,8 @@ void simulate(
     int cacheSize,
     int associativity,
     int blockSize,
-    std::shared_ptr<Logger> logger
+    std::shared_ptr<Logger> logger,
+    std::shared_ptr<Bus> bus
 ) {
     dataPath += "_" + std::to_string(threadID) + ".data";
 
@@ -142,14 +150,13 @@ void simulate(
     }
 
     std::unique_ptr<Cache> cache = std::make_unique<Cache>(
+        threadID,
         cacheSize,
         associativity,
         blockSize,
         cacheType,
         logger
     );
-
-    return;
 
     std::string line, hex;
     int label;
@@ -161,12 +168,15 @@ void simulate(
         lineStream >> label >> hex;
         parsedHex = std::stoi(hex, nullptr, 16);
 
+        std::queue<BusEvent> eventQueue = bus->getEventsInQueue(threadID);
+        cache->handleBusEvents(eventQueue, bus);
+
         switch ((InstructionType) label) {
             case InstructionType::READ:
-                cache->read(parsedHex);
+                cache->read(parsedHex, bus);
                 break;
             case InstructionType::WRITE:
-                cache->write(parsedHex);
+                cache->write(parsedHex, bus);
                 break;
             case InstructionType::OTHER:
                 logger->addExecutionCycles(parsedHex);
@@ -174,6 +184,9 @@ void simulate(
                 break;
         }
     }
+
+    std::cout << "Thread " << threadID << std::endl;
+    logger->logResults();
 }
 
 // Bithack: http://www.graphics.stanford.edu/~seander/bithacks.html#DetermineIfPowerOf2

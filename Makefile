@@ -1,6 +1,6 @@
 CXX=g++
 CXXFLAGS=-g -Wall -std=c++20 -pthread
-OBJECTS=Cache.o CacheSet.o DragonCacheSet.o MESICacheSet.o Logger.o
+OBJECTS=Bus.o Cache.o CacheSet.o DragonCacheSet.o MESICacheSet.o Logger.o
 
 all: coherence
 

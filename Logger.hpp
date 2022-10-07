@@ -5,6 +5,8 @@ class Logger {
 public:
     Logger();
 
+    void logResults();
+
     void addExecutionCycles(int numCycles);
     void addComputeCycles(int numCycles);
     void addIdleCycles(int numCycles);
