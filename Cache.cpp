@@ -8,7 +8,7 @@
 #include <cstdint>
 #include <memory>
 
-const int NUM_ADDRESS_BITS = 32;
+const uint32_t NUM_ADDRESS_BITS = 32;
 
 Cache::Cache(
     int threadID,
@@ -25,10 +25,16 @@ Cache::Cache(
     this->numSetIdxBits = std::log2(numSets);
     this->numTagBits = NUM_ADDRESS_BITS - numOffsetBits - numSetIdxBits;
 
-    this->blkOffsetMask = 0xFFFFFFFF >> (NUM_ADDRESS_BITS - this->numOffsetBits);
-    this->setIdxMask = 0xFFFFFFFF >> (NUM_ADDRESS_BITS - this->numSetIdxBits)
-        << this->numOffsetBits;
-    this->tagMask = 0xFFFFFFFF << (NUM_ADDRESS_BITS - this->numTagBits);
+    this->blkOffsetMask = this->numOffsetBits == 0
+        ? 0
+        : 0xFFFFFFFF >> (NUM_ADDRESS_BITS - this->numOffsetBits);
+    this->setIdxMask = this->numSetIdxBits == 0
+        ? 0
+        : 0xFFFFFFFF >> (NUM_ADDRESS_BITS - this->numSetIdxBits)
+            << this->numOffsetBits;
+    this->tagMask = this->numTagBits == 0
+        ? 0
+        : 0xFFFFFFFF << (NUM_ADDRESS_BITS - this->numTagBits);
 
     this->cacheSets.reserve(numSets);
     for (int setIdx = 0; setIdx < numSets; ++setIdx) {
