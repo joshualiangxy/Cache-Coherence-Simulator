@@ -30,15 +30,15 @@ struct CacheLineNode {
 
 class CacheSet {
 public:
-    CacheSet(int setIdx, int numSetIdxBits, int associativity);
+    CacheSet(int setIdx, int numSetIdxBits, int associativity, int blockSize);
 
-    virtual void read(
+    virtual bool read(
         int threadID,
         uint32_t tag,
         std::shared_ptr<Bus> bus,
         std::shared_ptr<Logger> logger
     );
-    virtual void write(
+    virtual bool write(
         int threadID,
         uint32_t tag,
         std::shared_ptr<Bus> bus,
@@ -68,6 +68,7 @@ public:
 
 protected:
     std::unordered_map<uint32_t, std::shared_ptr<CacheLineNode>> cacheSet;
+    int numCyclesToSendBlock;
 
     uint32_t getBlockIdx(uint32_t tag);
 
@@ -83,7 +84,7 @@ private:
     void removeNode(std::shared_ptr<CacheLineNode> node);
     void insertNode(std::shared_ptr<CacheLineNode> node);
 
-    void loadFromMemory(
+    bool loadFromMemory(
         int threadID,
         uint32_t tag,
         std::shared_ptr<Bus> bus,

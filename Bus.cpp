@@ -30,13 +30,17 @@ bool Bus::busReadAndCheckIsExclusive(uint32_t blockIdx, int threadID) {
     return isExclusive;
 }
 
-void Bus::busReadExclusive(uint32_t blockIdx, int threadID) {
+bool Bus::busReadExclusiveAndCheckIsExclusive(uint32_t blockIdx, int threadID) {
+    bool isExclusive;
     {
         std::scoped_lock lock{this->busMutex};
+
+        isExclusive = this->blockIdxCountMap[blockIdx].empty();
         this->blockIdxCountMap[blockIdx].insert(threadID);
     }
 
     this->sendEvent(blockIdx, BusEventType::BUS_READ_EXCLUSIVE, threadID);
+    return isExclusive;
 }
 
 bool Bus::busUpdateAndCheckIsExclusive(uint32_t blockIdx, int threadID) {

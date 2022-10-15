@@ -3,7 +3,7 @@
 
 class Logger {
 public:
-    Logger();
+    Logger(int blockSize);
 
     void logResults();
 
@@ -30,6 +30,7 @@ public:
     long long getNumPublicDataAccess();
 
 private:
+    int blockSize;
     long long numExecutionCycles;
     long long numComputeCycles;
     long long numIdleCycles;

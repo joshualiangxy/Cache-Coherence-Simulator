@@ -5,29 +5,30 @@
 #include <stdexcept>
 #include <utility>
 
-const int NUM_BYTES_IN_WORD = 4;
-const int NUM_CYCLES_PER_WORD = 2;
+const int MEMORY_FETCH_COST = 100;
 
 DragonCacheSet::DragonCacheSet(
     int setIdx,
     int numSetIdxBits,
     int associativity,
     int blockSize
-) : CacheSet{setIdx, numSetIdxBits, associativity} {
-    int numWordsInBlock = blockSize / NUM_BYTES_IN_WORD;
-    this->numCyclesToSendBlock = numWordsInBlock * NUM_CYCLES_PER_WORD;
-}
+) : CacheSet{setIdx, numSetIdxBits, associativity, blockSize} {}
 
 DragonCacheSet::~DragonCacheSet() {};
 
-void DragonCacheSet::read(
+bool DragonCacheSet::read(
     int threadID,
     uint32_t tag,
     std::shared_ptr<Bus> bus,
     std::shared_ptr<Logger> logger
 ) {
-    CacheSet::read(threadID, tag, bus, logger);
+    bool isCacheMiss = CacheSet::read(threadID, tag, bus, logger);
     std::shared_ptr<CacheLineNode> node = this->cacheSet[tag];
+
+    if (isCacheMiss) {
+        logger->addExecutionCycles(MEMORY_FETCH_COST);
+        logger->addIdleCycles(MEMORY_FETCH_COST);
+    }
 
     switch (node->state) {
         case CacheLineState::INVALID: {
@@ -55,16 +56,23 @@ void DragonCacheSet::read(
     } else {
         logger->incrementPublicDataAccess();
     }
+
+    return isCacheMiss;
 }
 
-void DragonCacheSet::write(
+bool DragonCacheSet::write(
     int threadID,
     uint32_t tag,
     std::shared_ptr<Bus> bus,
     std::shared_ptr<Logger> logger
 ) {
-    CacheSet::write(threadID, tag, bus, logger);
+    bool isCacheMiss = CacheSet::write(threadID, tag, bus, logger);
     std::shared_ptr<CacheLineNode> node = this->cacheSet[tag];
+
+    if (isCacheMiss) {
+        logger->addExecutionCycles(MEMORY_FETCH_COST);
+        logger->addIdleCycles(MEMORY_FETCH_COST);
+    }
 
     switch (node->state) {
         case CacheLineState::INVALID: {
@@ -80,8 +88,8 @@ void DragonCacheSet::write(
                 node->state = CacheLineState::SHARED_MODIFIED;
 
                 bus->busUpdateAndCheckIsExclusive(blockIdx, threadID);
-                logger->incrementBusTraffic();
                 logger->incrementBusInvalidateUpdateEvents();
+                logger->incrementBusTraffic();
                 logger->addExecutionCycles(this->numCyclesToSendBlock);
                 logger->addIdleCycles(this->numCyclesToSendBlock);
             }
@@ -102,8 +110,8 @@ void DragonCacheSet::write(
                 ? CacheLineState::MODIFIED
                 : CacheLineState::SHARED_MODIFIED;
 
-            logger->incrementBusTraffic();
             logger->incrementBusInvalidateUpdateEvents();
+            logger->incrementBusTraffic();
             logger->addExecutionCycles(this->numCyclesToSendBlock);
             logger->addIdleCycles(this->numCyclesToSendBlock);
             break;
@@ -111,6 +119,8 @@ void DragonCacheSet::write(
         default:
             throw std::logic_error("Invalid cache state for Dragon");
     }
+
+    return isCacheMiss;
 }
 
 void DragonCacheSet::handleBusReadEvent(
@@ -169,5 +179,7 @@ void DragonCacheSet::handleBusUpdateEvent(
     }
 
     logger->incrementBusTraffic();
+    logger->addExecutionCycles(this->numCyclesToSendBlock);
+    logger->addIdleCycles(this->numCyclesToSendBlock);
 }
 

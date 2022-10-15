@@ -11,16 +11,21 @@
 
 class MESICacheSet : public CacheSet {
 public:
-    MESICacheSet(int setIdx, int numSetIdxBits, int associativity);
+    MESICacheSet(
+        int setIdx,
+        int numSetIdxBits,
+        int associativity,
+        int blockSize
+    );
     virtual ~MESICacheSet();
 
-    void read(
+    bool read(
         int threadID,
         uint32_t tag,
         std::shared_ptr<Bus> bus,
         std::shared_ptr<Logger> logger
     );
-    void write(
+    bool write(
         int threadID,
         uint32_t tag,
         std::shared_ptr<Bus> bus,

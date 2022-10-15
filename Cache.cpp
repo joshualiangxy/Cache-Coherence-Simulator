@@ -44,7 +44,8 @@ Cache::Cache(
                     std::make_shared<MESICacheSet>(
                         setIdx,
                         this->numSetIdxBits,
-                        associativity
+                        associativity,
+                        blockSize
                     )
                 );
                 break;

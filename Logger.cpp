@@ -2,8 +2,9 @@
 
 #include <iostream>
 
-Logger::Logger()
-    : numExecutionCycles{0}
+Logger::Logger(int blockSize)
+    : blockSize{blockSize}
+    , numExecutionCycles{0}
     , numComputeCycles{0}
     , numIdleCycles{0}
     , numLoadStoreInstructions{0}
@@ -48,7 +49,7 @@ void Logger::incrementNumCacheMiss() {
 }
 
 void Logger::incrementBusTraffic() {
-    this->numBusTrafficInBytes += 4;
+    this->numBusTrafficInBytes += this->blockSize;
 }
 
 void Logger::incrementBusInvalidateUpdateEvents() {

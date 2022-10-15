@@ -6,18 +6,24 @@
 #include <stdexcept>
 #include <utility>
 
-MESICacheSet::MESICacheSet(int setIdx, int numSetIdxBits, int associativity)
-    : CacheSet{setIdx, numSetIdxBits, associativity} {}
+const int MEMORY_FETCH_COST = 100;
+
+MESICacheSet::MESICacheSet(
+    int setIdx,
+    int numSetIdxBits,
+    int associativity,
+    int blockSize
+) : CacheSet{setIdx, numSetIdxBits, associativity, blockSize} {}
 
 MESICacheSet::~MESICacheSet() {};
 
-void MESICacheSet::read(
+bool MESICacheSet::read(
     int threadID,
     uint32_t tag,
     std::shared_ptr<Bus> bus,
     std::shared_ptr<Logger> logger
 ) {
-    CacheSet::read(threadID, tag, bus, logger);
+    bool isCacheMiss = CacheSet::read(threadID, tag, bus, logger);
     std::shared_ptr<CacheLineNode> node = this->cacheSet[tag];
 
     switch (node->state) {
@@ -26,9 +32,19 @@ void MESICacheSet::read(
                 this->getBlockIdx(tag),
                 threadID
             );
-            node->state = isExclusive
-                ? CacheLineState::EXCLUSIVE
-                : CacheLineState::SHARED;
+
+            if (isExclusive) {
+                node->state = CacheLineState::EXCLUSIVE;
+
+                logger->addExecutionCycles(MEMORY_FETCH_COST);
+                logger->addIdleCycles(MEMORY_FETCH_COST);
+            } else {
+                node->state = CacheLineState::SHARED;
+
+                logger->incrementBusTraffic();
+                logger->addExecutionCycles(this->numCyclesToSendBlock);
+                logger->addIdleCycles(this->numCyclesToSendBlock);
+            }
             break;
         }
         case CacheLineState::SHARED:
@@ -45,21 +61,41 @@ void MESICacheSet::read(
     } else {
         logger->incrementPublicDataAccess();
     }
+
+    return isCacheMiss;
 }
 
-void MESICacheSet::write(
+bool MESICacheSet::write(
     int threadID,
     uint32_t tag,
     std::shared_ptr<Bus> bus,
     std::shared_ptr<Logger> logger
 ) {
-    CacheSet::write(threadID, tag, bus, logger);
+    bool isCacheMiss = CacheSet::write(threadID, tag, bus, logger);
     std::shared_ptr<CacheLineNode> node = this->cacheSet[tag];
 
     switch (node->state) {
-        case CacheLineState::INVALID:
+        case CacheLineState::INVALID: {
+            bool isExclusive = bus->busReadExclusiveAndCheckIsExclusive(
+                this->getBlockIdx(tag),
+                threadID
+            );
+
+            if (isExclusive) {
+                logger->addExecutionCycles(MEMORY_FETCH_COST);
+                logger->addIdleCycles(MEMORY_FETCH_COST);
+            } else {
+                logger->incrementBusTraffic();
+                logger->addExecutionCycles(this->numCyclesToSendBlock);
+                logger->addIdleCycles(this->numCyclesToSendBlock);
+            }
+            break;
+        }
         case CacheLineState::SHARED:
-            bus->busReadExclusive(this->getBlockIdx(tag), threadID);
+            bus->busReadExclusiveAndCheckIsExclusive(
+                this->getBlockIdx(tag),
+                threadID
+            );
             break;
         case CacheLineState::EXCLUSIVE:
         case CacheLineState::MODIFIED:
@@ -69,6 +105,7 @@ void MESICacheSet::write(
     }
 
     node->state = CacheLineState::MODIFIED;
+    return isCacheMiss;
 }
 
 void MESICacheSet::handleBusReadEvent(
@@ -80,9 +117,12 @@ void MESICacheSet::handleBusReadEvent(
     std::shared_ptr<CacheLineNode> node = this->cacheSet[tag];
 
     switch (node->state) {
-        case CacheLineState::SHARED:
         case CacheLineState::EXCLUSIVE:
         case CacheLineState::MODIFIED:
+            logger->incrementBusTraffic();
+            logger->addExecutionCycles(this->numCyclesToSendBlock);
+            logger->addIdleCycles(this->numCyclesToSendBlock);
+        case CacheLineState::SHARED:
             node->state = CacheLineState::SHARED;
             break;
         case CacheLineState::INVALID:
@@ -103,9 +143,12 @@ void MESICacheSet::handleBusReadExclusiveEvent(
     std::shared_ptr<CacheLineNode> node = this->cacheSet[tag];
 
     switch (node->state) {
-        case CacheLineState::SHARED:
         case CacheLineState::EXCLUSIVE:
         case CacheLineState::MODIFIED:
+            logger->incrementBusTraffic();
+            logger->addExecutionCycles(this->numCyclesToSendBlock);
+            logger->addIdleCycles(this->numCyclesToSendBlock);
+        case CacheLineState::SHARED:
             node->state = CacheLineState::INVALID;
             this->invalidate(threadID, tag, bus, logger);
             break;

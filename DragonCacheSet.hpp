@@ -14,17 +14,17 @@ public:
         int setIdx,
         int numSetIdxBits,
         int associativity,
-        int numWordsInBlock
+        int blockSize
     );
     virtual ~DragonCacheSet();
 
-    void read(
+    bool read(
         int threadID,
         uint32_t tag,
         std::shared_ptr<Bus> bus,
         std::shared_ptr<Logger> logger
     );
-    void write(
+    bool write(
         int threadID,
         uint32_t tag,
         std::shared_ptr<Bus> bus,
@@ -39,9 +39,6 @@ public:
         std::shared_ptr<Logger> logger
     );
     void handleBusUpdateEvent(uint32_t tag, std::shared_ptr<Logger> logger);
-
-private:
-    int numCyclesToSendBlock;
 };
 
 #endif

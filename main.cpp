@@ -85,12 +85,17 @@ int main(int argc, char* argv[]) {
         exit(1);
     }
 
+    for (int i = 0; i < argc; ++i) {
+        std::cout << argv[i] << ' ';
+    }
+    std::cout << std::endl << std::endl;
+
     std::vector<std::thread> threads;
     std::vector<std::shared_ptr<Logger>> loggers;
     std::shared_ptr<Bus> bus = std::make_shared<Bus>();
 
     for (int threadID = 0; threadID < NUM_THREADS; ++threadID) {
-        loggers.emplace_back(std::make_shared<Logger>());
+        loggers.emplace_back(std::make_shared<Logger>(blockSize));
         threads.emplace_back(
             simulate,
             threadID,

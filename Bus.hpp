@@ -27,7 +27,7 @@ public:
     Bus();
 
     bool busReadAndCheckIsExclusive(uint32_t blockIdx, int threadID);
-    void busReadExclusive(uint32_t blockIdx, int threadID);
+    bool busReadExclusiveAndCheckIsExclusive(uint32_t blockIdx, int threadID);
     bool busUpdateAndCheckIsExclusive(uint32_t blockIdx, int threadID);
 
     void invalidateBlock(uint32_t blockIdx, int threadID);
