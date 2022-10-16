@@ -32,13 +32,13 @@ class CacheSet {
 public:
     CacheSet(int setIdx, int numSetIdxBits, int associativity, int blockSize);
 
-    virtual bool read(
+    virtual int read(
         int threadID,
         uint32_t tag,
         std::shared_ptr<Bus> bus,
         std::shared_ptr<Logger> logger
     );
-    virtual bool write(
+    virtual int write(
         int threadID,
         uint32_t tag,
         std::shared_ptr<Bus> bus,
@@ -84,7 +84,7 @@ private:
     void removeNode(std::shared_ptr<CacheLineNode> node);
     void insertNode(std::shared_ptr<CacheLineNode> node);
 
-    bool loadFromMemory(
+    int loadFromMemory(
         int threadID,
         uint32_t tag,
         std::shared_ptr<Bus> bus,

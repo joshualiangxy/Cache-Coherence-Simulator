@@ -17,13 +17,13 @@ MESICacheSet::MESICacheSet(
 
 MESICacheSet::~MESICacheSet() {};
 
-bool MESICacheSet::read(
+int MESICacheSet::read(
     int threadID,
     uint32_t tag,
     std::shared_ptr<Bus> bus,
     std::shared_ptr<Logger> logger
 ) {
-    bool isCacheMiss = CacheSet::read(threadID, tag, bus, logger);
+    int numCycles = CacheSet::read(threadID, tag, bus, logger);
     std::shared_ptr<CacheLineNode> node = this->cacheSet[tag];
 
     switch (node->state) {
@@ -36,11 +36,13 @@ bool MESICacheSet::read(
             if (isExclusive) {
                 node->state = CacheLineState::EXCLUSIVE;
 
+                numCycles += MEMORY_FETCH_COST;
                 logger->addExecutionCycles(MEMORY_FETCH_COST);
                 logger->addIdleCycles(MEMORY_FETCH_COST);
             } else {
                 node->state = CacheLineState::SHARED;
 
+                numCycles += this->numCyclesToSendBlock;
                 logger->incrementBusTraffic();
                 logger->addExecutionCycles(this->numCyclesToSendBlock);
                 logger->addIdleCycles(this->numCyclesToSendBlock);
@@ -62,16 +64,16 @@ bool MESICacheSet::read(
         logger->incrementPublicDataAccess();
     }
 
-    return isCacheMiss;
+    return numCycles;
 }
 
-bool MESICacheSet::write(
+int MESICacheSet::write(
     int threadID,
     uint32_t tag,
     std::shared_ptr<Bus> bus,
     std::shared_ptr<Logger> logger
 ) {
-    bool isCacheMiss = CacheSet::write(threadID, tag, bus, logger);
+    int numCycles = CacheSet::write(threadID, tag, bus, logger);
     std::shared_ptr<CacheLineNode> node = this->cacheSet[tag];
 
     switch (node->state) {
@@ -82,9 +84,13 @@ bool MESICacheSet::write(
             );
 
             if (isExclusive) {
+                numCycles += MEMORY_FETCH_COST;
+
                 logger->addExecutionCycles(MEMORY_FETCH_COST);
                 logger->addIdleCycles(MEMORY_FETCH_COST);
             } else {
+                numCycles += this->numCyclesToSendBlock;
+
                 logger->incrementBusTraffic();
                 logger->addExecutionCycles(this->numCyclesToSendBlock);
                 logger->addIdleCycles(this->numCyclesToSendBlock);
@@ -105,7 +111,7 @@ bool MESICacheSet::write(
     }
 
     node->state = CacheLineState::MODIFIED;
-    return isCacheMiss;
+    return numCycles;
 }
 
 void MESICacheSet::handleBusReadEvent(

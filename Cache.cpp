@@ -64,18 +64,32 @@ Cache::Cache(
     }
 }
 
-void Cache::read(uint32_t address, std::shared_ptr<Bus> bus) {
+int Cache::read(uint32_t address, std::shared_ptr<Bus> bus) {
     uint32_t setIdx = this->getSetIdx(address), tag = this->getTag(address);
-    this->cacheSets[setIdx]->read(this->threadID, tag, bus, this->logger);
+    int numCycles = this->cacheSets[setIdx]->read(
+        this->threadID,
+        tag,
+        bus,
+        this->logger
+    );
 
     this->logger->incrementNumLoadStoreInstructions();
+
+    return numCycles;
 }
 
-void Cache::write(uint32_t address, std::shared_ptr<Bus> bus) {
+int Cache::write(uint32_t address, std::shared_ptr<Bus> bus) {
     uint32_t setIdx = this->getSetIdx(address), tag = this->getTag(address);
-    this->cacheSets[setIdx]->write(this->threadID, tag, bus, this->logger);
+    int numCycles = this->cacheSets[setIdx]->write(
+        this->threadID,
+        tag,
+        bus,
+        this->logger
+    );
 
     this->logger->incrementNumLoadStoreInstructions();
+
+    return numCycles;
 }
 
 void Cache::handleBusEvents(

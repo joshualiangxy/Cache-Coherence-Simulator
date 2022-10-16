@@ -35,26 +35,26 @@ CacheSet::CacheSet(
     this->lastDummy->prev = firstDummy;
 }
 
-bool CacheSet::read(
+int CacheSet::read(
     int threadID,
     uint32_t tag,
     std::shared_ptr<Bus> bus,
     std::shared_ptr<Logger> logger
 ) {
-    bool isCacheMiss = this->loadFromMemory(threadID, tag, bus, logger);
-    return isCacheMiss;
+    int numCycles = this->loadFromMemory(threadID, tag, bus, logger);
+    return numCycles;
 }
 
-bool CacheSet::write(
+int CacheSet::write(
     int threadID,
     uint32_t tag,
     std::shared_ptr<Bus> bus,
     std::shared_ptr<Logger> logger
 ) {
-    bool isCacheMiss = this->loadFromMemory(threadID, tag, bus, logger);
+    int numCycles = this->loadFromMemory(threadID, tag, bus, logger);
     this->cacheSet[tag]->isDirty = true;
 
-    return isCacheMiss;
+    return numCycles;
 }
 
 void CacheSet::invalidate(
@@ -110,7 +110,7 @@ void CacheSet::insertNode(std::shared_ptr<CacheLineNode> node) {
     this->firstDummy->next = node;
 }
 
-bool CacheSet::loadFromMemory(
+int CacheSet::loadFromMemory(
     int threadID,
     uint32_t tag,
     std::shared_ptr<Bus> bus,
@@ -118,17 +118,14 @@ bool CacheSet::loadFromMemory(
 ) {
     int numCycles = 0;
     std::shared_ptr<CacheLineNode> node;
-    bool isCacheMiss;
 
     auto iter = this->cacheSet.find(tag);
     if (iter != this->cacheSet.end()) {
-        isCacheMiss = false;
         node = iter->second;
         this->removeNode(node);
 
         numCycles += CACHE_HIT_COST;
     } else {
-        isCacheMiss = true;
         logger->incrementNumCacheMiss();
         node = std::make_shared<CacheLineNode>(tag);
         cacheSet[tag] = node;
@@ -145,6 +142,6 @@ bool CacheSet::loadFromMemory(
     logger->addExecutionCycles(numCycles);
     logger->addIdleCycles(numCycles);
 
-    return isCacheMiss;
+    return numCycles;
 }
 

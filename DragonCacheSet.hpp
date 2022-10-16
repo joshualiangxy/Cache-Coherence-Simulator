@@ -18,13 +18,13 @@ public:
     );
     virtual ~DragonCacheSet();
 
-    bool read(
+    int read(
         int threadID,
         uint32_t tag,
         std::shared_ptr<Bus> bus,
         std::shared_ptr<Logger> logger
     );
-    bool write(
+    int write(
         int threadID,
         uint32_t tag,
         std::shared_ptr<Bus> bus,

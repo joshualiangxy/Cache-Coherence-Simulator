@@ -16,19 +16,14 @@ DragonCacheSet::DragonCacheSet(
 
 DragonCacheSet::~DragonCacheSet() {};
 
-bool DragonCacheSet::read(
+int DragonCacheSet::read(
     int threadID,
     uint32_t tag,
     std::shared_ptr<Bus> bus,
     std::shared_ptr<Logger> logger
 ) {
-    bool isCacheMiss = CacheSet::read(threadID, tag, bus, logger);
+    int numCycles = CacheSet::read(threadID, tag, bus, logger);
     std::shared_ptr<CacheLineNode> node = this->cacheSet[tag];
-
-    if (isCacheMiss) {
-        logger->addExecutionCycles(MEMORY_FETCH_COST);
-        logger->addIdleCycles(MEMORY_FETCH_COST);
-    }
 
     switch (node->state) {
         case CacheLineState::INVALID: {
@@ -36,6 +31,11 @@ bool DragonCacheSet::read(
                 this->getBlockIdx(tag),
                 threadID
             );
+
+            numCycles += MEMORY_FETCH_COST;
+            logger->addExecutionCycles(MEMORY_FETCH_COST);
+            logger->addIdleCycles(MEMORY_FETCH_COST);
+
             node->state = isExclusive
                 ? CacheLineState::EXCLUSIVE
                 : CacheLineState::SHARED_CLEAN;
@@ -57,22 +57,17 @@ bool DragonCacheSet::read(
         logger->incrementPublicDataAccess();
     }
 
-    return isCacheMiss;
+    return numCycles;
 }
 
-bool DragonCacheSet::write(
+int DragonCacheSet::write(
     int threadID,
     uint32_t tag,
     std::shared_ptr<Bus> bus,
     std::shared_ptr<Logger> logger
 ) {
-    bool isCacheMiss = CacheSet::write(threadID, tag, bus, logger);
+    int numCycles = CacheSet::write(threadID, tag, bus, logger);
     std::shared_ptr<CacheLineNode> node = this->cacheSet[tag];
-
-    if (isCacheMiss) {
-        logger->addExecutionCycles(MEMORY_FETCH_COST);
-        logger->addIdleCycles(MEMORY_FETCH_COST);
-    }
 
     switch (node->state) {
         case CacheLineState::INVALID: {
@@ -81,6 +76,10 @@ bool DragonCacheSet::write(
                 blockIdx,
                 threadID
             );
+
+            numCycles += MEMORY_FETCH_COST;
+            logger->addExecutionCycles(MEMORY_FETCH_COST);
+            logger->addIdleCycles(MEMORY_FETCH_COST);
 
             if (isExclusive) {
                 node->state = CacheLineState::MODIFIED;
@@ -120,7 +119,7 @@ bool DragonCacheSet::write(
             throw std::logic_error("Invalid cache state for Dragon");
     }
 
-    return isCacheMiss;
+    return numCycles;
 }
 
 void DragonCacheSet::handleBusReadEvent(

@@ -184,29 +184,33 @@ void simulate(
     );
 
     std::string line, hex;
-    int label;
+    int label, cyclesLeft = 1;
     uint32_t parsedHex;
 
-    while (std::getline(fileStream, line)) {
-        std::istringstream lineStream{line};
-
-        lineStream >> label >> hex;
-        parsedHex = std::stoi(hex, nullptr, 16);
-
+    while (cyclesLeft-- >= 0) {
         std::queue<BusEvent> eventQueue = bus->getEventsInQueue(threadID);
         cache->handleBusEvents(eventQueue, bus);
 
-        switch ((InstructionType) label) {
-            case InstructionType::READ:
-                cache->read(parsedHex, bus);
-                break;
-            case InstructionType::WRITE:
-                cache->write(parsedHex, bus);
-                break;
-            case InstructionType::OTHER:
-                logger->addExecutionCycles(parsedHex);
-                logger->addComputeCycles(parsedHex);
-                break;
+        if (cyclesLeft == 0 && std::getline(fileStream, line)) {
+            std::istringstream lineStream{line};
+
+            lineStream >> label >> hex;
+            parsedHex = std::stoi(hex, nullptr, 16);
+
+            switch ((InstructionType) label) {
+                case InstructionType::READ:
+                    cyclesLeft += cache->read(parsedHex, bus);
+                    break;
+                case InstructionType::WRITE:
+                    cyclesLeft += cache->write(parsedHex, bus);
+                    break;
+                case InstructionType::OTHER:
+                    cyclesLeft += parsedHex;
+
+                    logger->addExecutionCycles(parsedHex);
+                    logger->addComputeCycles(parsedHex);
+                    break;
+            }
         }
     }
 }

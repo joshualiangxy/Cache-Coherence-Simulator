@@ -22,9 +22,9 @@ public:
         CacheType cacheType,
         std::shared_ptr<Logger> logger
     );
-    
-    void read(uint32_t address, std::shared_ptr<Bus> bus);
-    void write(uint32_t address, std::shared_ptr<Bus> bus);
+
+    int read(uint32_t address, std::shared_ptr<Bus> bus);
+    int write(uint32_t address, std::shared_ptr<Bus> bus);
 
     void handleBusEvents(
         std::queue<BusEvent>& eventQueue,
