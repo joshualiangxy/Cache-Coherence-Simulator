@@ -110,6 +110,7 @@ int MESICacheSet::write(
             throw std::logic_error("Invalid cache state for MESI");
     }
 
+    logger->incrementPrivateDataAccess();
     node->state = CacheLineState::MODIFIED;
     return numCycles;
 }

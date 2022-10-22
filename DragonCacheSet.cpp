@@ -119,6 +119,13 @@ int DragonCacheSet::write(
             throw std::logic_error("Invalid cache state for Dragon");
     }
 
+    if (node->state == CacheLineState::EXCLUSIVE
+            || node->state == CacheLineState::MODIFIED) {
+        logger->incrementPrivateDataAccess();
+    } else {
+        logger->incrementPublicDataAccess();
+    }
+
     return numCycles;
 }
 
