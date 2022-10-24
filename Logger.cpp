@@ -12,7 +12,8 @@ Logger::Logger(int blockSize)
     , numBusTrafficInBytes{0}
     , numBusInvalidateUpdateEvents{0}
     , numPrivateDataAccess{0}
-    , numPublicDataAccess{0} {}
+    , numPublicDataAccess{0}
+    , numUniqueAddresses{0} {}
 
 void Logger::logResults() {
     long double cacheMissRate = (long double) numCacheMiss / numLoadStoreInstructions;
@@ -25,7 +26,9 @@ void Logger::logResults() {
         << "\n6. Data traffic in bytes: " << numBusTrafficInBytes
         << "\n7. Number of invalidations or updates on bus: " << numBusInvalidateUpdateEvents
         << "\n8. Number of private data access: " << numPrivateDataAccess
-        << "\n9. Number of public data access: " << numPublicDataAccess << std::endl << std::endl;
+        << "\n9. Number of public data access: " << numPublicDataAccess
+        << "\n10: Number of unique data access: " << numUniqueAddresses
+        << std::endl << std::endl;
 }
 
 void Logger::addExecutionCycles(int numCycles) {
@@ -62,6 +65,10 @@ void Logger::incrementPrivateDataAccess() {
 
 void Logger::incrementPublicDataAccess() {
     ++this->numPublicDataAccess;
+}
+
+void Logger::incrementUniqueAddresses() {
+    ++this->numUniqueAddresses;
 }
 
 long long Logger::getNumExecutionCycles() {

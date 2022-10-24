@@ -19,6 +19,8 @@ public:
     void incrementPrivateDataAccess();
     void incrementPublicDataAccess();
 
+    void incrementUniqueAddresses();
+
     long long getNumExecutionCycles();
     long long getNumComputeCycles();
     long long getNumIdleCycles();
@@ -40,6 +42,7 @@ private:
     long long numBusInvalidateUpdateEvents;
     long long numPrivateDataAccess;
     long long numPublicDataAccess;
+    long long numUniqueAddresses;
 };
 
 #endif
