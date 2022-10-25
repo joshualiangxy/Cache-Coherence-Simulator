@@ -126,10 +126,11 @@ void MESICacheSet::handleBusReadEvent(
     switch (node->state) {
         case CacheLineState::EXCLUSIVE:
         case CacheLineState::MODIFIED:
+        case CacheLineState::SHARED:
             logger->incrementBusTraffic();
             logger->addExecutionCycles(this->numCyclesToSendBlock);
             logger->addIdleCycles(this->numCyclesToSendBlock);
-        case CacheLineState::SHARED:
+
             node->state = CacheLineState::SHARED;
             break;
         case CacheLineState::INVALID:
@@ -152,10 +153,11 @@ void MESICacheSet::handleBusReadExclusiveEvent(
     switch (node->state) {
         case CacheLineState::EXCLUSIVE:
         case CacheLineState::MODIFIED:
+        case CacheLineState::SHARED:
             logger->incrementBusTraffic();
             logger->addExecutionCycles(this->numCyclesToSendBlock);
             logger->addIdleCycles(this->numCyclesToSendBlock);
-        case CacheLineState::SHARED:
+
             node->state = CacheLineState::INVALID;
             this->invalidate(threadID, tag, bus, logger);
             break;
