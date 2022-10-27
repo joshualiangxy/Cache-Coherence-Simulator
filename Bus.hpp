@@ -29,8 +29,11 @@ public:
     bool busReadAndCheckIsExclusive(uint32_t blockIdx, int threadID);
     bool busReadExclusiveAndCheckIsExclusive(uint32_t blockIdx, int threadID);
     bool busUpdateAndCheckIsExclusive(uint32_t blockIdx, int threadID);
+    bool hasNodeInForwardState();
 
     void invalidateBlock(uint32_t blockIdx, int threadID);
+    void setHasForwardState(bool state);
+
 
     std::queue<BusEvent> getEventsInQueue(int threadID);
 
@@ -40,6 +43,8 @@ private:
 
     std::unordered_map<uint32_t, std::unordered_set<int>> blockIdxCountMap;
     std::vector<std::queue<BusEvent>> eventQueues;
+
+    bool hasForwardState;
 
     void sendEvent(uint32_t blockIdx, BusEventType eventType, int threadID);
 };

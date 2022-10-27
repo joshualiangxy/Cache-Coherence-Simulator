@@ -15,7 +15,8 @@ enum class CacheLineState {
     EXCLUSIVE,
     MODIFIED,
     SHARED_CLEAN,
-    SHARED_MODIFIED
+    SHARED_MODIFIED,
+    FORWARD
 };
 
 struct CacheLineNode {

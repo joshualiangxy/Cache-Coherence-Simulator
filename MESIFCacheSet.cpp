@@ -1,4 +1,4 @@
-#include "MESICacheSet.hpp"
+#include "MESIFCacheSet.hpp"
 
 #include "Logger.hpp"
 
@@ -8,16 +8,16 @@
 
 const int MEMORY_FETCH_COST = 100;
 
-MESICacheSet::MESICacheSet(
+MESIFCacheSet::MESIFCacheSet(
     int setIdx,
     int numSetIdxBits,
     int associativity,
     int blockSize
 ) : CacheSet{setIdx, numSetIdxBits, associativity, blockSize} {}
 
-MESICacheSet::~MESICacheSet() {};
+MESIFCacheSet::~MESIFCacheSet() {};
 
-int MESICacheSet::read(
+int MESIFCacheSet::read(
     int threadID,
     uint32_t tag,
     std::shared_ptr<Bus> bus,
@@ -26,8 +26,10 @@ int MESICacheSet::read(
     int numCycles = CacheSet::read(threadID, tag, bus, logger);
     std::shared_ptr<CacheLineNode> node = this->cacheSet[tag];
 
-    switch (node->state) {
+    switch(node->state) {
         case CacheLineState::INVALID: {
+            //May need extra check to see if it is not exclusive but all caches are in shared.
+            //Under MESIF, we have to fetch from memory in this case.
             bool isExclusive = bus->busReadAndCheckIsExclusive(
                 this->getBlockIdx(tag),
                 threadID
@@ -40,21 +42,30 @@ int MESICacheSet::read(
                 logger->addExecutionCycles(MEMORY_FETCH_COST);
                 logger->addIdleCycles(MEMORY_FETCH_COST);
             } else {
-                node->state = CacheLineState::SHARED;
+                // A MESIF optimisation is to always put the most recent requester in FORWARD state
+                node->state = CacheLineState::FORWARD;
 
-                numCycles += this->numCyclesToSendBlock;
-                logger->incrementBusTraffic();
-                logger->addExecutionCycles(this->numCyclesToSendBlock);
-                logger->addIdleCycles(this->numCyclesToSendBlock);
+                if (bus->hasNodeInForwardState()) {
+                    numCycles += this->numCyclesToSendBlock;
+                    logger->incrementBusTraffic();
+                    logger->addExecutionCycles(this->numCyclesToSendBlock);
+                    logger->addIdleCycles(this->numCyclesToSendBlock);
+                } else {
+                    numCycles += MEMORY_FETCH_COST;
+                    logger->addExecutionCycles(MEMORY_FETCH_COST);
+                    logger->addIdleCycles(MEMORY_FETCH_COST);
+                }
+
+                bus->setHasForwardState(true);
             }
-            break;
         }
         case CacheLineState::SHARED:
         case CacheLineState::EXCLUSIVE:
         case CacheLineState::MODIFIED:
+        case CacheLineState::FORWARD:
             break;
         default:
-            throw std::logic_error("Invalid cache state for MESI");
+            throw std::logic_error("Invalid cache state for MESIF");
     }
 
     if (node->state == CacheLineState::EXCLUSIVE
@@ -67,7 +78,7 @@ int MESICacheSet::read(
     return numCycles;
 }
 
-int MESICacheSet::write(
+int MESIFCacheSet::write(
     int threadID,
     uint32_t tag,
     std::shared_ptr<Bus> bus,
@@ -76,14 +87,14 @@ int MESICacheSet::write(
     int numCycles = CacheSet::write(threadID, tag, bus, logger);
     std::shared_ptr<CacheLineNode> node = this->cacheSet[tag];
 
-    switch (node->state) {
+    switch(node->state) {
         case CacheLineState::INVALID: {
             bool isExclusive = bus->busReadExclusiveAndCheckIsExclusive(
                 this->getBlockIdx(tag),
                 threadID
             );
 
-            if (isExclusive) {
+            if(isExclusive) {
                 numCycles += MEMORY_FETCH_COST;
 
                 logger->addExecutionCycles(MEMORY_FETCH_COST);
@@ -102,12 +113,14 @@ int MESICacheSet::write(
                 this->getBlockIdx(tag),
                 threadID
             );
+        case CacheLineState::FORWARD:
+            bus->setHasForwardState(false);
             break;
         case CacheLineState::EXCLUSIVE:
         case CacheLineState::MODIFIED:
             break;
         default:
-            throw std::logic_error("Invalid cache state for MESI");
+            throw std::logic_error("Invalid cache state for MESIF");
     }
 
     logger->incrementPrivateDataAccess();
@@ -115,31 +128,33 @@ int MESICacheSet::write(
     return numCycles;
 }
 
-void MESICacheSet::handleBusReadEvent(
+void MESIFCacheSet::handleBusReadEvent(
     uint32_t tag,
     std::shared_ptr<Logger> logger
 ) {
     if (!this->cacheSet.contains(tag)) return;
 
     std::shared_ptr<CacheLineNode> node = this->cacheSet[tag];
-
-    switch (node->state) {
+    
+    switch(node->state) {
+        case CacheLineState::FORWARD:
         case CacheLineState::EXCLUSIVE:
         case CacheLineState::MODIFIED:
-        case CacheLineState::SHARED:
-            node->state = CacheLineState::SHARED;
             logger->incrementBusTraffic();
             logger->addExecutionCycles(this->numCyclesToSendBlock);
             logger->addIdleCycles(this->numCyclesToSendBlock);
+        // In MESIF, cache-to-cache sharing never happens from SHARED state.
+        case CacheLineState::SHARED:
+            node->state = CacheLineState::SHARED;
             break;
         case CacheLineState::INVALID:
-            throw std::logic_error("Invalid cache state for BusRd in MESI");
+            throw std::logic_error("Invalid cache state for BusRd in MESIF");
         default:
-            throw std::logic_error("Invalid cache state for MESI");
+            throw std::logic_error("Invalid cache state for MESIF");
     }
 }
 
-void MESICacheSet::handleBusReadExclusiveEvent(
+void MESIFCacheSet::handleBusReadExclusiveEvent(
     int threadID,
     uint32_t tag,
     std::shared_ptr<Bus> bus,
@@ -150,6 +165,8 @@ void MESICacheSet::handleBusReadExclusiveEvent(
     std::shared_ptr<CacheLineNode> node = this->cacheSet[tag];
 
     switch (node->state) {
+        case CacheLineState::FORWARD:
+            bus->setHasForwardState(false);
         case CacheLineState::EXCLUSIVE:
         case CacheLineState::MODIFIED:
             logger->incrementBusTraffic();
@@ -160,16 +177,15 @@ void MESICacheSet::handleBusReadExclusiveEvent(
             this->invalidate(threadID, tag, bus, logger);
             break;
         case CacheLineState::INVALID:
-            throw std::logic_error("Invalid cache state for BusRdX in MESI");
+            throw std::logic_error("Invalid cache state for BusRdX in MESIF");
         default:
-            throw std::logic_error("Invalid cache state for MESI");
+            throw std::logic_error("Invalid cache state for MESIF");
     }
 }
 
-void MESICacheSet::handleBusUpdateEvent(
+void MESIFCacheSet::handleBusUpdateEvent(
     uint32_t tag,
     std::shared_ptr<Logger> logger
 ) {
-    throw std::logic_error("Invalid bus event for MESI");
+    throw std::logic_error("Invalid bus event for MESIF");
 }
-

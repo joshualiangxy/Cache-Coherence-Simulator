@@ -10,7 +10,7 @@
 #include <utility>
 #include <vector>
 
-enum class CacheType { MESI, DRAGON };
+enum class CacheType { MESI, DRAGON, MESIF };
 
 class Cache {
 public:

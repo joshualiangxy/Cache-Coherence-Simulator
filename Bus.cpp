@@ -81,3 +81,13 @@ std::queue<BusEvent> Bus::getEventsInQueue(int threadID) {
     return eventQueue;
 }
 
+bool Bus::hasNodeInForwardState() {
+    std::scoped_lock lock{this->busMutex};
+    return this->hasForwardState;
+}
+
+void Bus::setHasForwardState(bool state) {
+    std::scoped_lock lock{this->busMutex};
+    this->hasForwardState = state;
+}
+

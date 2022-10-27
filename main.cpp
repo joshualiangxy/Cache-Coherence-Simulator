@@ -57,6 +57,8 @@ int main(int argc, char* argv[]) {
         cacheType = CacheType::DRAGON;
     } else if (args[1] == "MESI") {
         cacheType = CacheType::MESI;
+    } else if (args[1] == "MESIF") {
+        cacheType = CacheType::MESIF;
     } else {
         std::cerr << "Expected <PROTOCOL>: MESI | Dragon" << std::endl
             << "Actual <PROTOCOL>: " << args[1] << std::endl;

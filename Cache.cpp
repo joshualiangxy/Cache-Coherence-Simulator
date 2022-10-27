@@ -3,6 +3,7 @@
 #include "DragonCacheSet.hpp"
 #include "Logger.hpp"
 #include "MESICacheSet.hpp"
+#include "MESIFCacheSet.hpp"
 
 #include <cmath>
 #include <cstdint>
@@ -53,6 +54,17 @@ Cache::Cache(
             case CacheType::DRAGON:
                 this->cacheSets.emplace_back(
                     std::make_shared<DragonCacheSet>(
+                        setIdx,
+                        this->numSetIdxBits,
+                        associativity,
+                        blockSize
+                    )
+                );
+                break;
+            
+            case CacheType::MESIF:
+                this->cacheSets.emplace_back(
+                    std::make_shared<MESIFCacheSet>(
                         setIdx,
                         this->numSetIdxBits,
                         associativity,

@@ -1,0 +1,936 @@
+./coherence MESIF fluidanimate 64 2 32 
+
+Overall Execution Cycles for entire trace: 639834325
+Total data traffic on the bus in bytes: 14624992
+Total invalidations/updates on the bus: 23
+
+Core 0
+1. Overall Execution Cycle: 166114908
+2. Number of compute cycles: 11337782
+3. Number of load/store instructions: 2576503
+4. Number of idle cycles: 154777126
+5. Data cache miss rate: 0.474366
+6. Data traffic in bytes: 3808256
+7. Number of invalidations or updates on bus: 2
+8. Number of private data access: 2418671
+9. Number of public data access: 157832
+
+Core 1
+1. Overall Execution Cycle: 152694997
+2. Number of compute cycles: 11290799
+3. Number of load/store instructions: 2407844
+4. Number of idle cycles: 141404198
+5. Data cache miss rate: 0.469461
+6. Data traffic in bytes: 4033888
+7. Number of invalidations or updates on bus: 7
+8. Number of private data access: 2243124
+9. Number of public data access: 164720
+
+Core 2
+1. Overall Execution Cycle: 168257911
+2. Number of compute cycles: 11337671
+3. Number of load/store instructions: 2604189
+4. Number of idle cycles: 156920240
+5. Data cache miss rate: 0.472418
+6. Data traffic in bytes: 3025632
+7. Number of invalidations or updates on bus: 0
+8. Number of private data access: 2476295
+9. Number of public data access: 127894
+
+Core 3
+1. Overall Execution Cycle: 152766509
+2. Number of compute cycles: 11301515
+3. Number of load/store instructions: 2411465
+4. Number of idle cycles: 141464994
+5. Data cache miss rate: 0.468337
+6. Data traffic in bytes: 3757216
+7. Number of invalidations or updates on bus: 14
+8. Number of private data access: 2254945
+9. Number of public data access: 156520
+
+./coherence MESIF fluidanimate 128 2 32 
+
+Overall Execution Cycles for entire trace: 531057749
+Total data traffic on the bus in bytes: 18535872
+Total invalidations/updates on the bus: 99
+
+Core 0
+1. Overall Execution Cycle: 140312709
+2. Number of compute cycles: 11337782
+3. Number of load/store instructions: 2576503
+4. Number of idle cycles: 128974927
+5. Data cache miss rate: 0.395642
+6. Data traffic in bytes: 4618592
+7. Number of invalidations or updates on bus: 42
+8. Number of private data access: 2350097
+9. Number of public data access: 226406
+
+Core 1
+1. Overall Execution Cycle: 125610308
+2. Number of compute cycles: 11290799
+3. Number of load/store instructions: 2407844
+4. Number of idle cycles: 114319509
+5. Data cache miss rate: 0.383782
+6. Data traffic in bytes: 4909504
+7. Number of invalidations or updates on bus: 8
+8. Number of private data access: 2177092
+9. Number of public data access: 230752
+
+Core 2
+1. Overall Execution Cycle: 140819634
+2. Number of compute cycles: 11337671
+3. Number of load/store instructions: 2604189
+4. Number of idle cycles: 129481963
+5. Data cache miss rate: 0.390553
+6. Data traffic in bytes: 4304096
+7. Number of invalidations or updates on bus: 39
+8. Number of private data access: 2400392
+9. Number of public data access: 203797
+
+Core 3
+1. Overall Execution Cycle: 124315098
+2. Number of compute cycles: 11301515
+3. Number of load/store instructions: 2411465
+4. Number of idle cycles: 113013583
+5. Data cache miss rate: 0.37841
+6. Data traffic in bytes: 4703680
+7. Number of invalidations or updates on bus: 10
+8. Number of private data access: 2187815
+9. Number of public data access: 223650
+
+./coherence MESIF fluidanimate 256 2 32 
+
+Overall Execution Cycles for entire trace: 369938653
+Total data traffic on the bus in bytes: 14131328
+Total invalidations/updates on the bus: 89
+
+Core 0
+1. Overall Execution Cycle: 100335409
+2. Number of compute cycles: 11337782
+3. Number of load/store instructions: 2576503
+4. Number of idle cycles: 88997627
+5. Data cache miss rate: 0.266557
+6. Data traffic in bytes: 3615616
+7. Number of invalidations or updates on bus: 6
+8. Number of private data access: 2251274
+9. Number of public data access: 325229
+
+Core 1
+1. Overall Execution Cycle: 84105106
+2. Number of compute cycles: 11290799
+3. Number of load/store instructions: 2407844
+4. Number of idle cycles: 72814307
+5. Data cache miss rate: 0.238494
+6. Data traffic in bytes: 3590240
+7. Number of invalidations or updates on bus: 28
+8. Number of private data access: 2084572
+9. Number of public data access: 323272
+
+Core 2
+1. Overall Execution Cycle: 101768754
+2. Number of compute cycles: 11337671
+3. Number of load/store instructions: 2604189
+4. Number of idle cycles: 90431083
+5. Data cache miss rate: 0.265429
+6. Data traffic in bytes: 3398240
+7. Number of invalidations or updates on bus: 17
+8. Number of private data access: 2311762
+9. Number of public data access: 292427
+
+Core 3
+1. Overall Execution Cycle: 83729384
+2. Number of compute cycles: 11301515
+3. Number of load/store instructions: 2411465
+4. Number of idle cycles: 72427869
+5. Data cache miss rate: 0.236956
+6. Data traffic in bytes: 3527232
+7. Number of invalidations or updates on bus: 38
+8. Number of private data access: 2090310
+9. Number of public data access: 321155
+
+./coherence MESIF fluidanimate 512 2 32 
+
+Overall Execution Cycles for entire trace: 277912432
+Total data traffic on the bus in bytes: 10097536
+Total invalidations/updates on the bus: 133
+
+Core 0
+1. Overall Execution Cycle: 74249774
+2. Number of compute cycles: 11337782
+3. Number of load/store instructions: 2576503
+4. Number of idle cycles: 62911992
+5. Data cache miss rate: 0.182318
+6. Data traffic in bytes: 2716064
+7. Number of invalidations or updates on bus: 21
+8. Number of private data access: 2201802
+9. Number of public data access: 374701
+
+Core 1
+1. Overall Execution Cycle: 64355191
+2. Number of compute cycles: 11290799
+3. Number of load/store instructions: 2407844
+4. Number of idle cycles: 53064392
+5. Data cache miss rate: 0.166081
+6. Data traffic in bytes: 2457888
+7. Number of invalidations or updates on bus: 62
+8. Number of private data access: 2042894
+9. Number of public data access: 364950
+
+Core 2
+1. Overall Execution Cycle: 75554472
+2. Number of compute cycles: 11337671
+3. Number of load/store instructions: 2604189
+4. Number of idle cycles: 64216801
+5. Data cache miss rate: 0.181504
+6. Data traffic in bytes: 2478368
+7. Number of invalidations or updates on bus: 20
+8. Number of private data access: 2273696
+9. Number of public data access: 330493
+
+Core 3
+1. Overall Execution Cycle: 63752995
+2. Number of compute cycles: 11301515
+3. Number of load/store instructions: 2411465
+4. Number of idle cycles: 52451480
+5. Data cache miss rate: 0.164337
+6. Data traffic in bytes: 2445216
+7. Number of invalidations or updates on bus: 30
+8. Number of private data access: 2042949
+9. Number of public data access: 368516
+
+./coherence MESIF fluidanimate 1024 2 32 
+
+Overall Execution Cycles for entire trace: 203392526
+Total data traffic on the bus in bytes: 2984480
+Total invalidations/updates on the bus: 279
+
+Core 0
+1. Overall Execution Cycle: 54484119
+2. Number of compute cycles: 11337782
+3. Number of load/store instructions: 2576503
+4. Number of idle cycles: 43146337
+5. Data cache miss rate: 0.113264
+6. Data traffic in bytes: 833120
+7. Number of invalidations or updates on bus: 37
+8. Number of private data access: 2178028
+9. Number of public data access: 398475
+
+Core 1
+1. Overall Execution Cycle: 46779612
+2. Number of compute cycles: 11290799
+3. Number of load/store instructions: 2407844
+4. Number of idle cycles: 35488813
+5. Data cache miss rate: 0.0982767
+6. Data traffic in bytes: 698208
+7. Number of invalidations or updates on bus: 69
+8. Number of private data access: 2013887
+9. Number of public data access: 393957
+
+Core 2
+1. Overall Execution Cycle: 55727854
+2. Number of compute cycles: 11337671
+3. Number of load/store instructions: 2604189
+4. Number of idle cycles: 44390183
+5. Data cache miss rate: 0.114429
+6. Data traffic in bytes: 808576
+7. Number of invalidations or updates on bus: 37
+8. Number of private data access: 2250560
+9. Number of public data access: 353629
+
+Core 3
+1. Overall Execution Cycle: 46400941
+2. Number of compute cycles: 11301515
+3. Number of load/store instructions: 2411465
+4. Number of idle cycles: 35099426
+5. Data cache miss rate: 0.0967574
+6. Data traffic in bytes: 644576
+7. Number of invalidations or updates on bus: 136
+8. Number of private data access: 2029572
+9. Number of public data access: 381893
+
+./coherence MESIF fluidanimate 2048 2 32 
+
+Overall Execution Cycles for entire trace: 166018571
+Total data traffic on the bus in bytes: 1842048
+Total invalidations/updates on the bus: 689
+
+Core 0
+1. Overall Execution Cycle: 43562854
+2. Number of compute cycles: 11337782
+3. Number of load/store instructions: 2576503
+4. Number of idle cycles: 32225072
+5. Data cache miss rate: 0.0776879
+6. Data traffic in bytes: 493664
+7. Number of invalidations or updates on bus: 79
+8. Number of private data access: 2165576
+9. Number of public data access: 410927
+
+Core 1
+1. Overall Execution Cycle: 38763872
+2. Number of compute cycles: 11290799
+3. Number of load/store instructions: 2407844
+4. Number of idle cycles: 27473073
+5. Data cache miss rate: 0.0696071
+6. Data traffic in bytes: 460864
+7. Number of invalidations or updates on bus: 153
+8. Number of private data access: 2002031
+9. Number of public data access: 405813
+
+Core 2
+1. Overall Execution Cycle: 45086043
+2. Number of compute cycles: 11337671
+3. Number of load/store instructions: 2604189
+4. Number of idle cycles: 33748372
+5. Data cache miss rate: 0.0803448
+6. Data traffic in bytes: 475232
+7. Number of invalidations or updates on bus: 94
+8. Number of private data access: 2237467
+9. Number of public data access: 366722
+
+Core 3
+1. Overall Execution Cycle: 38605802
+2. Number of compute cycles: 11301515
+3. Number of load/store instructions: 2411465
+4. Number of idle cycles: 27304287
+5. Data cache miss rate: 0.0691372
+6. Data traffic in bytes: 412288
+7. Number of invalidations or updates on bus: 363
+8. Number of private data access: 2005410
+9. Number of public data access: 406055
+
+./coherence MESIF fluidanimate 4096 2 32 
+
+Overall Execution Cycles for entire trace: 145507108
+Total data traffic on the bus in bytes: 1650720
+Total invalidations/updates on the bus: 974
+
+Core 0
+1. Overall Execution Cycle: 37506042
+2. Number of compute cycles: 11337782
+3. Number of load/store instructions: 2576503
+4. Number of idle cycles: 26168260
+5. Data cache miss rate: 0.0585332
+6. Data traffic in bytes: 432736
+7. Number of invalidations or updates on bus: 93
+8. Number of private data access: 2150189
+9. Number of public data access: 426314
+
+Core 1
+1. Overall Execution Cycle: 34594560
+2. Number of compute cycles: 11290799
+3. Number of load/store instructions: 2407844
+4. Number of idle cycles: 23303761
+5. Data cache miss rate: 0.0551576
+6. Data traffic in bytes: 409856
+7. Number of invalidations or updates on bus: 301
+8. Number of private data access: 1987406
+9. Number of public data access: 420438
+
+Core 2
+1. Overall Execution Cycle: 39040834
+2. Number of compute cycles: 11337671
+3. Number of load/store instructions: 2604189
+4. Number of idle cycles: 27703163
+5. Data cache miss rate: 0.0615109
+6. Data traffic in bytes: 408320
+7. Number of invalidations or updates on bus: 114
+8. Number of private data access: 2219543
+9. Number of public data access: 384646
+
+Core 3
+1. Overall Execution Cycle: 34365672
+2. Number of compute cycles: 11301515
+3. Number of load/store instructions: 2411465
+4. Number of idle cycles: 23064157
+5. Data cache miss rate: 0.0545776
+6. Data traffic in bytes: 399808
+7. Number of invalidations or updates on bus: 466
+8. Number of private data access: 1993541
+9. Number of public data access: 417924
+
+./coherence MESIF fluidanimate 8192 2 32 
+
+Overall Execution Cycles for entire trace: 131165889
+Total data traffic on the bus in bytes: 1739392
+Total invalidations/updates on the bus: 1996
+
+Core 0
+1. Overall Execution Cycle: 33479585
+2. Number of compute cycles: 11337782
+3. Number of load/store instructions: 2576503
+4. Number of idle cycles: 22141803
+5. Data cache miss rate: 0.0469365
+6. Data traffic in bytes: 407264
+7. Number of invalidations or updates on bus: 162
+8. Number of private data access: 2132833
+9. Number of public data access: 443670
+
+Core 1
+1. Overall Execution Cycle: 31612994
+2. Number of compute cycles: 11290799
+3. Number of load/store instructions: 2407844
+4. Number of idle cycles: 20322195
+5. Data cache miss rate: 0.0466396
+6. Data traffic in bytes: 476704
+7. Number of invalidations or updates on bus: 707
+8. Number of private data access: 1967263
+9. Number of public data access: 440581
+
+Core 2
+1. Overall Execution Cycle: 34576218
+2. Number of compute cycles: 11337671
+3. Number of load/store instructions: 2604189
+4. Number of idle cycles: 23238547
+5. Data cache miss rate: 0.0488789
+6. Data traffic in bytes: 403296
+7. Number of invalidations or updates on bus: 138
+8. Number of private data access: 2181045
+9. Number of public data access: 423144
+
+Core 3
+1. Overall Execution Cycle: 31497092
+2. Number of compute cycles: 11301515
+3. Number of load/store instructions: 2411465
+4. Number of idle cycles: 20195577
+5. Data cache miss rate: 0.0460517
+6. Data traffic in bytes: 452128
+7. Number of invalidations or updates on bus: 989
+8. Number of private data access: 1969470
+9. Number of public data access: 441995
+
+./coherence MESIF fluidanimate 16384 2 32 
+
+Overall Execution Cycles for entire trace: 112827105
+Total data traffic on the bus in bytes: 1561216
+Total invalidations/updates on the bus: 6200
+
+Core 0
+1. Overall Execution Cycle: 29130386
+2. Number of compute cycles: 11337782
+3. Number of load/store instructions: 2576503
+4. Number of idle cycles: 17792604
+5. Data cache miss rate: 0.0360469
+6. Data traffic in bytes: 282752
+7. Number of invalidations or updates on bus: 361
+8. Number of private data access: 2117358
+9. Number of public data access: 459145
+
+Core 1
+1. Overall Execution Cycle: 27069704
+2. Number of compute cycles: 11290799
+3. Number of load/store instructions: 2407844
+4. Number of idle cycles: 15778905
+5. Data cache miss rate: 0.0353341
+6. Data traffic in bytes: 505280
+7. Number of invalidations or updates on bus: 3201
+8. Number of private data access: 1953991
+9. Number of public data access: 453853
+
+Core 2
+1. Overall Execution Cycle: 29434226
+2. Number of compute cycles: 11337671
+3. Number of load/store instructions: 2604189
+4. Number of idle cycles: 18096555
+5. Data cache miss rate: 0.0363192
+6. Data traffic in bytes: 284896
+7. Number of invalidations or updates on bus: 342
+8. Number of private data access: 2160428
+9. Number of public data access: 443761
+
+Core 3
+1. Overall Execution Cycle: 27192789
+2. Number of compute cycles: 11301515
+3. Number of load/store instructions: 2411465
+4. Number of idle cycles: 15891274
+5. Data cache miss rate: 0.0353457
+6. Data traffic in bytes: 488288
+7. Number of invalidations or updates on bus: 2296
+8. Number of private data access: 1935028
+9. Number of public data access: 476437
+
+./coherence MESIF fluidanimate 64 2 32 
+
+Overall Execution Cycles for entire trace: 639987062
+Total data traffic on the bus in bytes: 14372608
+Total invalidations/updates on the bus: 80
+
+Core 0
+1. Overall Execution Cycle: 166161698
+2. Number of compute cycles: 11337782
+3. Number of load/store instructions: 2576503
+4. Number of idle cycles: 154823916
+5. Data cache miss rate: 0.474365
+6. Data traffic in bytes: 3773632
+7. Number of invalidations or updates on bus: 0
+8. Number of private data access: 2418706
+9. Number of public data access: 157797
+
+Core 1
+1. Overall Execution Cycle: 152734541
+2. Number of compute cycles: 11290799
+3. Number of load/store instructions: 2407844
+4. Number of idle cycles: 141443742
+5. Data cache miss rate: 0.469455
+6. Data traffic in bytes: 3936544
+7. Number of invalidations or updates on bus: 37
+8. Number of private data access: 2247356
+9. Number of public data access: 160488
+
+Core 2
+1. Overall Execution Cycle: 168317851
+2. Number of compute cycles: 11337671
+3. Number of load/store instructions: 2604189
+4. Number of idle cycles: 156980180
+5. Data cache miss rate: 0.472418
+6. Data traffic in bytes: 2954912
+7. Number of invalidations or updates on bus: 1
+8. Number of private data access: 2477414
+9. Number of public data access: 126775
+
+Core 3
+1. Overall Execution Cycle: 152772972
+2. Number of compute cycles: 11301515
+3. Number of load/store instructions: 2411465
+4. Number of idle cycles: 141471457
+5. Data cache miss rate: 0.468333
+6. Data traffic in bytes: 3707520
+7. Number of invalidations or updates on bus: 42
+8. Number of private data access: 2257166
+9. Number of public data access: 154299
+
+./coherence MESIF fluidanimate 128 2 32 
+
+Overall Execution Cycles for entire trace: 531104480
+Total data traffic on the bus in bytes: 18354336
+Total invalidations/updates on the bus: 80
+
+Core 0
+1. Overall Execution Cycle: 140387922
+2. Number of compute cycles: 11337782
+3. Number of load/store instructions: 2576503
+4. Number of idle cycles: 129050140
+5. Data cache miss rate: 0.395643
+6. Data traffic in bytes: 4457024
+7. Number of invalidations or updates on bus: 37
+8. Number of private data access: 2353437
+9. Number of public data access: 223066
+
+Core 1
+1. Overall Execution Cycle: 125694732
+2. Number of compute cycles: 11290799
+3. Number of load/store instructions: 2407844
+4. Number of idle cycles: 114403933
+5. Data cache miss rate: 0.383782
+6. Data traffic in bytes: 4822752
+7. Number of invalidations or updates on bus: 2
+8. Number of private data access: 2177740
+9. Number of public data access: 230104
+
+Core 2
+1. Overall Execution Cycle: 140745948
+2. Number of compute cycles: 11337671
+3. Number of load/store instructions: 2604189
+4. Number of idle cycles: 129408277
+5. Data cache miss rate: 0.390552
+6. Data traffic in bytes: 4419520
+7. Number of invalidations or updates on bus: 39
+8. Number of private data access: 2390520
+9. Number of public data access: 213669
+
+Core 3
+1. Overall Execution Cycle: 124275878
+2. Number of compute cycles: 11301515
+3. Number of load/store instructions: 2411465
+4. Number of idle cycles: 112974363
+5. Data cache miss rate: 0.37841
+6. Data traffic in bytes: 4655040
+7. Number of invalidations or updates on bus: 2
+8. Number of private data access: 2189155
+9. Number of public data access: 222310
+
+./coherence MESIF fluidanimate 256 2 32 
+
+Overall Execution Cycles for entire trace: 370004085
+Total data traffic on the bus in bytes: 13998784
+Total invalidations/updates on the bus: 141
+
+Core 0
+1. Overall Execution Cycle: 100384424
+2. Number of compute cycles: 11337782
+3. Number of load/store instructions: 2576503
+4. Number of idle cycles: 89046642
+5. Data cache miss rate: 0.266559
+6. Data traffic in bytes: 3580256
+7. Number of invalidations or updates on bus: 15
+8. Number of private data access: 2250341
+9. Number of public data access: 326162
+
+Core 1
+1. Overall Execution Cycle: 84166568
+2. Number of compute cycles: 11290799
+3. Number of load/store instructions: 2407844
+4. Number of idle cycles: 72875769
+5. Data cache miss rate: 0.238492
+6. Data traffic in bytes: 3485152
+7. Number of invalidations or updates on bus: 41
+8. Number of private data access: 2088502
+9. Number of public data access: 319342
+
+Core 2
+1. Overall Execution Cycle: 101729020
+2. Number of compute cycles: 11337671
+3. Number of load/store instructions: 2604189
+4. Number of idle cycles: 90391349
+5. Data cache miss rate: 0.265428
+6. Data traffic in bytes: 3412768
+7. Number of invalidations or updates on bus: 10
+8. Number of private data access: 2301374
+9. Number of public data access: 302815
+
+Core 3
+1. Overall Execution Cycle: 83724073
+2. Number of compute cycles: 11301515
+3. Number of load/store instructions: 2411465
+4. Number of idle cycles: 72422558
+5. Data cache miss rate: 0.236956
+6. Data traffic in bytes: 3520608
+7. Number of invalidations or updates on bus: 75
+8. Number of private data access: 2088651
+9. Number of public data access: 322814
+
+./coherence MESIF fluidanimate 512 2 32 
+
+Overall Execution Cycles for entire trace: 278066453
+Total data traffic on the bus in bytes: 9910400
+Total invalidations/updates on the bus: 203
+
+Core 0
+1. Overall Execution Cycle: 74326928
+2. Number of compute cycles: 11337782
+3. Number of load/store instructions: 2576503
+4. Number of idle cycles: 62989146
+5. Data cache miss rate: 0.182316
+6. Data traffic in bytes: 2648960
+7. Number of invalidations or updates on bus: 21
+8. Number of private data access: 2213020
+9. Number of public data access: 363483
+
+Core 1
+1. Overall Execution Cycle: 64404159
+2. Number of compute cycles: 11290799
+3. Number of load/store instructions: 2407844
+4. Number of idle cycles: 53113360
+5. Data cache miss rate: 0.166082
+6. Data traffic in bytes: 2394432
+7. Number of invalidations or updates on bus: 45
+8. Number of private data access: 2044534
+9. Number of public data access: 363310
+
+Core 2
+1. Overall Execution Cycle: 75576308
+2. Number of compute cycles: 11337671
+3. Number of load/store instructions: 2604189
+4. Number of idle cycles: 64238637
+5. Data cache miss rate: 0.181506
+6. Data traffic in bytes: 2440448
+7. Number of invalidations or updates on bus: 22
+8. Number of private data access: 2276175
+9. Number of public data access: 328014
+
+Core 3
+1. Overall Execution Cycle: 63759058
+2. Number of compute cycles: 11301515
+3. Number of load/store instructions: 2411465
+4. Number of idle cycles: 52457543
+5. Data cache miss rate: 0.164341
+6. Data traffic in bytes: 2426560
+7. Number of invalidations or updates on bus: 115
+8. Number of private data access: 2041843
+9. Number of public data access: 369622
+
+./coherence MESIF fluidanimate 1024 2 32 
+
+Overall Execution Cycles for entire trace: 203426221
+Total data traffic on the bus in bytes: 2982080
+Total invalidations/updates on the bus: 156
+
+Core 0
+1. Overall Execution Cycle: 54485724
+2. Number of compute cycles: 11337782
+3. Number of load/store instructions: 2576503
+4. Number of idle cycles: 43147942
+5. Data cache miss rate: 0.113264
+6. Data traffic in bytes: 826528
+7. Number of invalidations or updates on bus: 31
+8. Number of private data access: 2178862
+9. Number of public data access: 397641
+
+Core 1
+1. Overall Execution Cycle: 46804174
+2. Number of compute cycles: 11290799
+3. Number of load/store instructions: 2407844
+4. Number of idle cycles: 35513375
+5. Data cache miss rate: 0.0982809
+6. Data traffic in bytes: 688352
+7. Number of invalidations or updates on bus: 57
+8. Number of private data access: 2015107
+9. Number of public data access: 392737
+
+Core 2
+1. Overall Execution Cycle: 55751406
+2. Number of compute cycles: 11337671
+3. Number of load/store instructions: 2604189
+4. Number of idle cycles: 44413735
+5. Data cache miss rate: 0.114432
+6. Data traffic in bytes: 801696
+7. Number of invalidations or updates on bus: 40
+8. Number of private data access: 2248482
+9. Number of public data access: 355707
+
+Core 3
+1. Overall Execution Cycle: 46384917
+2. Number of compute cycles: 11301515
+3. Number of load/store instructions: 2411465
+4. Number of idle cycles: 35083402
+5. Data cache miss rate: 0.0967524
+6. Data traffic in bytes: 665504
+7. Number of invalidations or updates on bus: 28
+8. Number of private data access: 2013487
+9. Number of public data access: 397978
+
+./coherence MESIF fluidanimate 2048 2 32 
+
+Overall Execution Cycles for entire trace: 166044506
+Total data traffic on the bus in bytes: 1784736
+Total invalidations/updates on the bus: 682
+
+Core 0
+1. Overall Execution Cycle: 43561074
+2. Number of compute cycles: 11337782
+3. Number of load/store instructions: 2576503
+4. Number of idle cycles: 32223292
+5. Data cache miss rate: 0.0776848
+6. Data traffic in bytes: 469088
+7. Number of invalidations or updates on bus: 80
+8. Number of private data access: 2164062
+9. Number of public data access: 412441
+
+Core 1
+1. Overall Execution Cycle: 38779332
+2. Number of compute cycles: 11290799
+3. Number of load/store instructions: 2407844
+4. Number of idle cycles: 27488533
+5. Data cache miss rate: 0.0695955
+6. Data traffic in bytes: 450528
+7. Number of invalidations or updates on bus: 148
+8. Number of private data access: 2003265
+9. Number of public data access: 404579
+
+Core 2
+1. Overall Execution Cycle: 45107253
+2. Number of compute cycles: 11337671
+3. Number of load/store instructions: 2604189
+4. Number of idle cycles: 33769582
+5. Data cache miss rate: 0.0803379
+6. Data traffic in bytes: 437216
+7. Number of invalidations or updates on bus: 60
+8. Number of private data access: 2250617
+9. Number of public data access: 353572
+
+Core 3
+1. Overall Execution Cycle: 38596847
+2. Number of compute cycles: 11301515
+3. Number of load/store instructions: 2411465
+4. Number of idle cycles: 27295332
+5. Data cache miss rate: 0.0691219
+6. Data traffic in bytes: 427904
+7. Number of invalidations or updates on bus: 394
+8. Number of private data access: 2007061
+9. Number of public data access: 404404
+
+./coherence MESIF fluidanimate 4096 2 32 
+
+Overall Execution Cycles for entire trace: 145553538
+Total data traffic on the bus in bytes: 1605952
+Total invalidations/updates on the bus: 905
+
+Core 0
+1. Overall Execution Cycle: 37528568
+2. Number of compute cycles: 11337782
+3. Number of load/store instructions: 2576503
+4. Number of idle cycles: 26190786
+5. Data cache miss rate: 0.0585324
+6. Data traffic in bytes: 414784
+7. Number of invalidations or updates on bus: 117
+8. Number of private data access: 2153158
+9. Number of public data access: 423345
+
+Core 1
+1. Overall Execution Cycle: 34582309
+2. Number of compute cycles: 11290799
+3. Number of load/store instructions: 2407844
+4. Number of idle cycles: 23291510
+5. Data cache miss rate: 0.0551672
+6. Data traffic in bytes: 402400
+7. Number of invalidations or updates on bus: 275
+8. Number of private data access: 1986907
+9. Number of public data access: 420937
+
+Core 2
+1. Overall Execution Cycle: 39059577
+2. Number of compute cycles: 11337671
+3. Number of load/store instructions: 2604189
+4. Number of idle cycles: 27721906
+5. Data cache miss rate: 0.0615051
+6. Data traffic in bytes: 398976
+7. Number of invalidations or updates on bus: 91
+8. Number of private data access: 2232433
+9. Number of public data access: 371756
+
+Core 3
+1. Overall Execution Cycle: 34383084
+2. Number of compute cycles: 11301515
+3. Number of load/store instructions: 2411465
+4. Number of idle cycles: 23081569
+5. Data cache miss rate: 0.0545693
+6. Data traffic in bytes: 389792
+7. Number of invalidations or updates on bus: 422
+8. Number of private data access: 1997749
+9. Number of public data access: 413716
+
+./coherence MESIF fluidanimate 8192 2 32 
+
+Overall Execution Cycles for entire trace: 131240361
+Total data traffic on the bus in bytes: 1763680
+Total invalidations/updates on the bus: 1268
+
+Core 0
+1. Overall Execution Cycle: 33472611
+2. Number of compute cycles: 11337782
+3. Number of load/store instructions: 2576503
+4. Number of idle cycles: 22134829
+5. Data cache miss rate: 0.046945
+6. Data traffic in bytes: 420160
+7. Number of invalidations or updates on bus: 179
+8. Number of private data access: 2132074
+9. Number of public data access: 444429
+
+Core 1
+1. Overall Execution Cycle: 31650289
+2. Number of compute cycles: 11290799
+3. Number of load/store instructions: 2407844
+4. Number of idle cycles: 20359490
+5. Data cache miss rate: 0.0466434
+6. Data traffic in bytes: 470912
+7. Number of invalidations or updates on bus: 485
+8. Number of private data access: 1969350
+9. Number of public data access: 438494
+
+Core 2
+1. Overall Execution Cycle: 34605132
+2. Number of compute cycles: 11337671
+3. Number of load/store instructions: 2604189
+4. Number of idle cycles: 23267461
+5. Data cache miss rate: 0.0488828
+6. Data traffic in bytes: 414144
+7. Number of invalidations or updates on bus: 133
+8. Number of private data access: 2181188
+9. Number of public data access: 423001
+
+Core 3
+1. Overall Execution Cycle: 31512329
+2. Number of compute cycles: 11301515
+3. Number of load/store instructions: 2411465
+4. Number of idle cycles: 20210814
+5. Data cache miss rate: 0.0460645
+6. Data traffic in bytes: 458464
+7. Number of invalidations or updates on bus: 471
+8. Number of private data access: 1969910
+9. Number of public data access: 441555
+
+./coherence MESIF fluidanimate 16384 2 32 
+
+Overall Execution Cycles for entire trace: 112890689
+Total data traffic on the bus in bytes: 1517280
+Total invalidations/updates on the bus: 5785
+
+Core 0
+1. Overall Execution Cycle: 29132509
+2. Number of compute cycles: 11337782
+3. Number of load/store instructions: 2576503
+4. Number of idle cycles: 17794727
+5. Data cache miss rate: 0.0360458
+6. Data traffic in bytes: 280992
+7. Number of invalidations or updates on bus: 364
+8. Number of private data access: 2116977
+9. Number of public data access: 459526
+
+Core 1
+1. Overall Execution Cycle: 27064612
+2. Number of compute cycles: 11290799
+3. Number of load/store instructions: 2407844
+4. Number of idle cycles: 15773813
+5. Data cache miss rate: 0.0353208
+6. Data traffic in bytes: 477632
+7. Number of invalidations or updates on bus: 2732
+8. Number of private data access: 1952586
+9. Number of public data access: 455258
+
+Core 2
+1. Overall Execution Cycle: 29438308
+2. Number of compute cycles: 11337671
+3. Number of load/store instructions: 2604189
+4. Number of idle cycles: 18100637
+5. Data cache miss rate: 0.0363276
+6. Data traffic in bytes: 284704
+7. Number of invalidations or updates on bus: 343
+8. Number of private data access: 2160296
+9. Number of public data access: 443893
+
+Core 3
+1. Overall Execution Cycle: 27255260
+2. Number of compute cycles: 11301515
+3. Number of load/store instructions: 2411465
+4. Number of idle cycles: 15953745
+5. Data cache miss rate: 0.0353296
+6. Data traffic in bytes: 473952
+7. Number of invalidations or updates on bus: 2346
+8. Number of private data access: 1937962
+9. Number of public data access: 473503
+
+./coherence MESIF fluidanimate 32 2 64 
+
+./coherence MESIF fluidanimate 32 2 128 
+
+./coherence MESIF fluidanimate 32 2 256 
+
+./coherence MESIF fluidanimate 32 2 512 
+
+./coherence MESIF fluidanimate 32 2 1024 
+
+./coherence MESIF fluidanimate 32 2 2048 
+
+./coherence MESIF fluidanimate 32 2 4096 
+
+./coherence MESIF fluidanimate 32 2 8192 
+
+./coherence MESIF fluidanimate 32 2 16384 
+
+./coherence MESIF fluidanimate 32 2 64 
+
+./coherence MESIF fluidanimate 32 2 128 
+
+./coherence MESIF fluidanimate 32 2 256 
+
+./coherence MESIF fluidanimate 32 2 512 
+
+./coherence MESIF fluidanimate 32 2 1024 
+
+./coherence MESIF fluidanimate 32 2 2048 
+
+./coherence MESIF fluidanimate 32 2 4096 
+
+./coherence MESIF fluidanimate 32 2 8192 
+
+./coherence MESIF fluidanimate 32 2 16384 
+
