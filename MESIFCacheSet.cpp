@@ -28,8 +28,6 @@ int MESIFCacheSet::read(
 
     switch(node->state) {
         case CacheLineState::INVALID: {
-            //May need extra check to see if it is not exclusive but all caches are in shared.
-            //Under MESIF, we have to fetch from memory in this case.
             bool isExclusive = bus->busReadAndCheckIsExclusive(
                 this->getBlockIdx(tag),
                 threadID
@@ -42,15 +40,17 @@ int MESIFCacheSet::read(
                 logger->addExecutionCycles(MEMORY_FETCH_COST);
                 logger->addIdleCycles(MEMORY_FETCH_COST);
             } else {
-                // A MESIF optimisation is to always put the most recent requester in FORWARD state
-                node->state = CacheLineState::FORWARD;
 
                 if (bus->hasNodeInForwardState()) {
+                    // A MESIF optimisation is to always put the most recent requester in FORWARD state
+                    node->state = CacheLineState::FORWARD;
                     numCycles += this->numCyclesToSendBlock;
                     logger->incrementBusTraffic();
                     logger->addExecutionCycles(this->numCyclesToSendBlock);
                     logger->addIdleCycles(this->numCyclesToSendBlock);
                 } else {
+                    // If a read request is satisfied from main memory, the node enters SHARED state
+                    node->state = CacheLineState::SHARED;
                     numCycles += MEMORY_FETCH_COST;
                     logger->addExecutionCycles(MEMORY_FETCH_COST);
                     logger->addIdleCycles(MEMORY_FETCH_COST);
@@ -108,13 +108,13 @@ int MESIFCacheSet::write(
             }
             break;
         }
+        case CacheLineState::FORWARD:
+            bus->setHasForwardState(false);
         case CacheLineState::SHARED:
             bus->busReadExclusiveAndCheckIsExclusive(
                 this->getBlockIdx(tag),
                 threadID
             );
-        case CacheLineState::FORWARD:
-            bus->setHasForwardState(false);
             break;
         case CacheLineState::EXCLUSIVE:
         case CacheLineState::MODIFIED:
