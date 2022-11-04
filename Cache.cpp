@@ -77,7 +77,9 @@ Cache::Cache(
 }
 
 int Cache::read(uint32_t address, std::shared_ptr<Bus> bus) {
-    uint32_t setIdx = this->getSetIdx(address), tag = this->getTag(address);
+    uint32_t setIdx = this->getSetIdx(address),
+        tag = this->getTag(address),
+        blockIdx = this->getBlockIdx(address);
     int numCycles = this->cacheSets[setIdx]->read(
         this->threadID,
         tag,
@@ -85,13 +87,19 @@ int Cache::read(uint32_t address, std::shared_ptr<Bus> bus) {
         this->logger
     );
 
+    if (!this->uniqueBlockSet.contains(blockIdx)) {
+        this->logger->incrementUniqueAddresses();
+        this->uniqueBlockSet.insert(blockIdx);
+    }
     this->logger->incrementNumLoadStoreInstructions();
 
     return numCycles;
 }
 
 int Cache::write(uint32_t address, std::shared_ptr<Bus> bus) {
-    uint32_t setIdx = this->getSetIdx(address), tag = this->getTag(address);
+    uint32_t setIdx = this->getSetIdx(address),
+        tag = this->getTag(address),
+        blockIdx = this->getBlockIdx(address);
     int numCycles = this->cacheSets[setIdx]->write(
         this->threadID,
         tag,
@@ -99,6 +107,10 @@ int Cache::write(uint32_t address, std::shared_ptr<Bus> bus) {
         this->logger
     );
 
+    if (!this->uniqueBlockSet.contains(blockIdx)) {
+        this->logger->incrementUniqueAddresses();
+        this->uniqueBlockSet.insert(blockIdx);
+    }
     this->logger->incrementNumLoadStoreInstructions();
 
     return numCycles;

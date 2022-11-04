@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -38,6 +39,7 @@ private:
     int numTagBits;
     int associativity;
     std::vector<std::shared_ptr<CacheSet>> cacheSets;
+    std::unordered_set<uint32_t> uniqueBlockSet;
 
     std::shared_ptr<Logger> logger;
     uint32_t blkOffsetMask;
