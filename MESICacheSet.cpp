@@ -117,6 +117,7 @@ int MESICacheSet::write(
 
 void MESICacheSet::handleBusReadEvent(
     uint32_t tag,
+    std::shared_ptr<Bus> bus,
     std::shared_ptr<Logger> logger
 ) {
     if (!this->cacheSet.contains(tag)) return;

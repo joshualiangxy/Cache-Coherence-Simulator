@@ -54,6 +54,7 @@ public:
 
     virtual void handleBusReadEvent(
         uint32_t tag,
+        std::shared_ptr<Bus> bus,
         std::shared_ptr<Logger> logger
     ) = 0;
     virtual void handleBusReadExclusiveEvent(

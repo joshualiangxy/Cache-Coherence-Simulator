@@ -50,7 +50,7 @@ private:
     uint32_t getTag(uint32_t address);
     uint32_t getBlockIdx(uint32_t address);
 
-    void handleBusReadEvent(uint32_t blockIdx);
+    void handleBusReadEvent(uint32_t blockIdx, std::shared_ptr<Bus> bus);
     void handleBusReadExclusiveEvent(uint32_t blockIdx, std::shared_ptr<Bus> bus);
     void handleBusUpdateEvent(uint32_t blockIdx);
 };

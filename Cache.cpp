@@ -126,7 +126,7 @@ void Cache::handleBusEvents(
 
         switch (event.type) {
             case BusEventType::BUS_READ:
-                this->handleBusReadEvent(event.blockIdx);
+                this->handleBusReadEvent(event.blockIdx, bus);
                 break;
             case BusEventType::BUS_READ_EXCLUSIVE:
                 this->handleBusReadExclusiveEvent(event.blockIdx, bus);
@@ -152,12 +152,19 @@ uint32_t Cache::getBlockIdx(uint32_t address) {
         >> this->numOffsetBits;
 }
 
-void Cache::handleBusReadEvent(uint32_t blockIdx) {
+void Cache::handleBusReadEvent(
+    uint32_t blockIdx, 
+    std::shared_ptr<Bus> bus
+) {
     uint32_t address = blockIdx << this->numOffsetBits,
         setIdx = this->getSetIdx(address),
         tag = this->getTag(address);
 
-    this->cacheSets[setIdx]->handleBusReadEvent(tag, this->logger);
+    this->cacheSets[setIdx]->handleBusReadEvent(
+        tag,
+        bus, 
+        this->logger
+    );
 }
 
 void Cache::handleBusReadExclusiveEvent(

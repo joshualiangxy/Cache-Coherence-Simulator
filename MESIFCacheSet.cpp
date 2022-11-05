@@ -26,8 +26,9 @@ int MESIFCacheSet::read(
     int numCycles = CacheSet::read(threadID, tag, bus, logger);
     std::shared_ptr<CacheLineNode> node = this->cacheSet[tag];
 
-    switch(node->state) {
+    switch (node->state) {
         case CacheLineState::INVALID: {
+            bool canFetchFromAnotherNode = bus->canFetchFromAnotherNode(this->getBlockIdx(tag));
             bool isExclusive = bus->busReadAndCheckIsExclusive(
                 this->getBlockIdx(tag),
                 threadID
@@ -35,15 +36,16 @@ int MESIFCacheSet::read(
 
             if (isExclusive) {
                 node->state = CacheLineState::EXCLUSIVE;
-
                 numCycles += MEMORY_FETCH_COST;
                 logger->addExecutionCycles(MEMORY_FETCH_COST);
                 logger->addIdleCycles(MEMORY_FETCH_COST);
+                bus->incrementBlockIdxShareableCount(this->getBlockIdx(tag));
             } else {
 
-                if (bus->hasNodeInForwardState()) {
+                if (canFetchFromAnotherNode) {
                     // A MESIF optimisation is to always put the most recent requester in FORWARD state
                     node->state = CacheLineState::FORWARD;
+                    bus->incrementBlockIdxShareableCount(this->getBlockIdx(tag));
                     numCycles += this->numCyclesToSendBlock;
                     logger->incrementBusTraffic();
                     logger->addExecutionCycles(this->numCyclesToSendBlock);
@@ -55,8 +57,6 @@ int MESIFCacheSet::read(
                     logger->addExecutionCycles(MEMORY_FETCH_COST);
                     logger->addIdleCycles(MEMORY_FETCH_COST);
                 }
-
-                bus->setHasForwardState(true);
             }
         }
         case CacheLineState::SHARED:
@@ -87,34 +87,42 @@ int MESIFCacheSet::write(
     int numCycles = CacheSet::write(threadID, tag, bus, logger);
     std::shared_ptr<CacheLineNode> node = this->cacheSet[tag];
 
-    switch(node->state) {
+    switch (node->state) {
         case CacheLineState::INVALID: {
+            bool canFetchFromAnotherNode = bus->canFetchFromAnotherNode(this->getBlockIdx(tag));
             bool isExclusive = bus->busReadExclusiveAndCheckIsExclusive(
                 this->getBlockIdx(tag),
                 threadID
             );
 
-            if(isExclusive) {
+            if (isExclusive) {
                 numCycles += MEMORY_FETCH_COST;
 
                 logger->addExecutionCycles(MEMORY_FETCH_COST);
                 logger->addIdleCycles(MEMORY_FETCH_COST);
             } else {
-                numCycles += this->numCyclesToSendBlock;
-
-                logger->incrementBusTraffic();
-                logger->addExecutionCycles(this->numCyclesToSendBlock);
-                logger->addIdleCycles(this->numCyclesToSendBlock);
+                if (canFetchFromAnotherNode) {
+                    numCycles += this->numCyclesToSendBlock;
+                    logger->incrementBusTraffic();
+                    logger->addExecutionCycles(this->numCyclesToSendBlock);
+                    logger->addIdleCycles(this->numCyclesToSendBlock);
+                } else {
+                    numCycles += MEMORY_FETCH_COST;
+                    logger->addExecutionCycles(MEMORY_FETCH_COST);
+                    logger->addIdleCycles(MEMORY_FETCH_COST);
+                }
             }
+            bus->incrementBlockIdxShareableCount(this->getBlockIdx(tag));
             break;
         }
         case CacheLineState::FORWARD:
-            bus->setHasForwardState(false);
+            bus->decrementBlockIdxShareableCount(this->getBlockIdx(tag));
         case CacheLineState::SHARED:
             bus->busReadExclusiveAndCheckIsExclusive(
                 this->getBlockIdx(tag),
                 threadID
             );
+            bus->incrementBlockIdxShareableCount(this->getBlockIdx(tag));
             break;
         case CacheLineState::EXCLUSIVE:
         case CacheLineState::MODIFIED:
@@ -130,22 +138,24 @@ int MESIFCacheSet::write(
 
 void MESIFCacheSet::handleBusReadEvent(
     uint32_t tag,
+    std::shared_ptr<Bus> bus,
     std::shared_ptr<Logger> logger
 ) {
     if (!this->cacheSet.contains(tag)) return;
 
     std::shared_ptr<CacheLineNode> node = this->cacheSet[tag];
     
-    switch(node->state) {
+    switch (node->state) {
         case CacheLineState::FORWARD:
         case CacheLineState::EXCLUSIVE:
         case CacheLineState::MODIFIED:
             logger->incrementBusTraffic();
             logger->addExecutionCycles(this->numCyclesToSendBlock);
             logger->addIdleCycles(this->numCyclesToSendBlock);
+            bus->decrementBlockIdxShareableCount(this->getBlockIdx(tag));
+            node->state = CacheLineState::SHARED;
         // In MESIF, cache-to-cache sharing never happens from SHARED state.
         case CacheLineState::SHARED:
-            node->state = CacheLineState::SHARED;
             break;
         case CacheLineState::INVALID:
             throw std::logic_error("Invalid cache state for BusRd in MESIF");
@@ -166,12 +176,12 @@ void MESIFCacheSet::handleBusReadExclusiveEvent(
 
     switch (node->state) {
         case CacheLineState::FORWARD:
-            bus->setHasForwardState(false);
         case CacheLineState::EXCLUSIVE:
         case CacheLineState::MODIFIED:
             logger->incrementBusTraffic();
             logger->addExecutionCycles(this->numCyclesToSendBlock);
             logger->addIdleCycles(this->numCyclesToSendBlock);
+            bus->decrementBlockIdxShareableCount(this->getBlockIdx(tag));
         case CacheLineState::SHARED:
             node->state = CacheLineState::INVALID;
             this->invalidate(threadID, tag, bus, logger);
