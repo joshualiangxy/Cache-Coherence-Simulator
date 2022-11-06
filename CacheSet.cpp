@@ -83,6 +83,15 @@ uint32_t CacheSet::getBlockIdx(uint32_t tag) {
 int CacheSet::evict(int threadID, std::shared_ptr<Bus> bus) {
     std::shared_ptr<CacheLineNode> last = this->lastDummy->prev;
 
+    bool isCacheShareable = 
+        last->state == CacheLineState::FORWARD 
+        || last->state == CacheLineState::MODIFIED 
+        || last->state == CacheLineState::EXCLUSIVE;
+
+    if (isCacheShareable) {
+        bus->decrementBlockIdxShareableCount(this->getBlockIdx(last->tag));
+    }
+    
     this->removeNode(last);
     this->cacheSet.erase(last->tag);
     bus->invalidateBlock(this->getBlockIdx(last->tag), threadID);

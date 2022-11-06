@@ -15,7 +15,8 @@ enum class CacheLineState {
     EXCLUSIVE,
     MODIFIED,
     SHARED_CLEAN,
-    SHARED_MODIFIED
+    SHARED_MODIFIED,
+    FORWARD
 };
 
 struct CacheLineNode {
@@ -53,6 +54,7 @@ public:
 
     virtual void handleBusReadEvent(
         uint32_t tag,
+        std::shared_ptr<Bus> bus,
         std::shared_ptr<Logger> logger
     ) = 0;
     virtual void handleBusReadExclusiveEvent(

@@ -81,3 +81,19 @@ std::queue<BusEvent> Bus::getEventsInQueue(int threadID) {
     return eventQueue;
 }
 
+bool Bus::canFetchFromAnotherNode(uint32_t blockIdx) {
+    std::scoped_lock lock{this->busMutex};
+    return this->blockIdxCountCacheShareable[blockIdx] > 0;
+}
+
+void Bus::incrementBlockIdxShareableCount(uint32_t blockIdx) {
+    std::scoped_lock lock{this->busMutex};
+    this->blockIdxCountCacheShareable[blockIdx]++;
+}
+
+void Bus::decrementBlockIdxShareableCount(uint32_t blockIdx) {
+    std::scoped_lock lock{this->busMutex};
+    this->blockIdxCountCacheShareable[blockIdx]--;
+}
+
+

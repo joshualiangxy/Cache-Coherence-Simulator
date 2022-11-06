@@ -31,7 +31,11 @@ public:
         std::shared_ptr<Logger> logger
     );
 
-    void handleBusReadEvent(uint32_t tag, std::shared_ptr<Logger> logger);
+    void handleBusReadEvent(
+        uint32_t tag, 
+        std::shared_ptr<Bus> bus,
+        std::shared_ptr<Logger> logger
+    );
     void handleBusReadExclusiveEvent(
         int threadID,
         uint32_t tag,
