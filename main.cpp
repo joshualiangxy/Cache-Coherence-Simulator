@@ -60,15 +60,15 @@ int main(int argc, char* argv[]) {
     } else if (args[1] == "MESIF") {
         cacheType = CacheType::MESIF;
     } else {
-        std::cerr << "Expected <PROTOCOL>: MESI | Dragon" << std::endl
-            << "Actual <PROTOCOL>: " << args[1] << std::endl;
+        std::cerr << "Expected <PROTOCOL>: MESI | MESIF | Dragon\n"
+            "Actual <PROTOCOL>: " << args[1] << std::endl;
         exit(1);
     }
 
     if (!validBenchmarks.contains(args[2])) {
         std::cerr << "Expected <INPUT_FILE>: "
-            "blackscholes | bodytrack | fluidanimate" << std::endl
-            << "Actual <INPUT_FILE>: " << args[2] << std::endl;
+            "blackscholes | bodytrack | fluidanimate\n"
+            "Actual <INPUT_FILE>: " << args[2] << std::endl;
         exit(1);
     }
 
@@ -90,7 +90,7 @@ int main(int argc, char* argv[]) {
     for (int i = 0; i < argc; ++i) {
         std::cout << argv[i] << ' ';
     }
-    std::cout << std::endl << std::endl;
+    std::cout << "\n" << std::endl;
 
     std::vector<std::thread> threads;
     std::vector<std::shared_ptr<Logger>> loggers;
@@ -124,12 +124,12 @@ int main(int argc, char* argv[]) {
             ->getNumBusInvalidateUpdateEvents();
     }
 
-    std::cout << "Overall Execution Cycles for entire trace: " << numExecutionCycles << std::endl
-        << "Total data traffic on the bus in bytes: " << numBusTrafficInBytes << std::endl
-        << "Total invalidations/updates on the bus: " << numBusInvalidateUpdateEvents << std::endl << std::endl;
+    std::cout << "Overall Execution Cycles for entire trace: " << numExecutionCycles
+        << "\nTotal data traffic on the bus in bytes: " << numBusTrafficInBytes
+        << "\nTotal invalidations/updates on the bus: " << numBusInvalidateUpdateEvents << "\n" << std::endl;
 
     for (int threadID = 0; threadID < NUM_THREADS; ++threadID) {
-        std::cout << "Core " << threadID << std::endl;
+        std::cout << "Core " << threadID << "\n";
         loggers[threadID]->logResults();
     }
 

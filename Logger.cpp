@@ -28,7 +28,7 @@ void Logger::logResults() {
         << "\n8. Number of private data access: " << numPrivateDataAccess
         << "\n9. Number of public data access: " << numPublicDataAccess
         << "\n10: Number of unique data access: " << numUniqueAddresses
-        << std::endl << std::endl;
+        << "\n" << std::endl;
 }
 
 void Logger::addExecutionCycles(int numCycles) {
